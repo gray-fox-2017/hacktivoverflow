@@ -52,6 +52,29 @@ methods.getDetailQuestion = (req, res) => {
   })
 }
 
+methods.getDetailAnswerByQuestion = (req, res) => {
+  Question.findById(req.params.questionid)
+  .populate('askedBy votes votes.votedBy answers answers.answeredBy')
+  .then(response => {
+    let detailAnswer = response.answers.filter(answer => {
+      // console.log('questionid');
+      // console.log(req.params.questionid);
+      // console.log('answeridX');
+      // console.log(answer._id);
+      // console.log('answeridY');
+      // console.log(req.params.answerid);
+      if (answer._id == req.params.answerid) {
+        return answer
+      }
+    })
+    console.log(detailAnswer);
+    res.send(detailAnswer[0])
+  })
+  .catch(error => {
+    console.log('masuk error', error);
+  })
+}
+
 methods.updateQuestion = (req, res) => {
   Question.findById(req.params.id)
   .populate('askedBy votes votes.votedBy answers answers.answeredBy')
