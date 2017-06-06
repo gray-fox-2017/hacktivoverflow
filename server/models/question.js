@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const Schema = express.Schema
+const Schema = mongoose.Schema
 const voteSchema = require('./vote')
 const answerSchema = require('./answer')
 
@@ -18,8 +18,8 @@ let questionSchema = new Schema({
     required: true
   },
   tags: [],
-  answerSchema: [answerSchema],
-  voteSchema: [voteSchema],
+  answers: [answerSchema],
+  votes: [voteSchema],
   createdDate: {
     type: Date,
     default: new Date()
