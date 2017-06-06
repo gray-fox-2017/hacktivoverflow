@@ -75,6 +75,30 @@ methods.getDetailAnswerByQuestion = (req, res) => {
   })
 }
 
+methods.voteToQuestion = (req, res) => {
+  Question.findById(req.params.id, (error, question) => {
+    if (error) res.json({error})
+    let exist = question.votes.some(data => data.votedBy == req.body.userActive)
+    console.log('Cek status vote');
+    console.log(exist);
+    if (exist) {
+      res.json({
+        statusVote: false,
+        message: 'You have already voted'
+      })
+    } else {
+      question.votes.push(req.body.votes)
+      question.save((err, record) => {
+        if (err) res.json({err})
+        console.log(record);
+        res.json({
+          statusVote: err == null ? true : false
+        })
+      })
+    }
+  })
+}
+
 methods.updateQuestion = (req, res) => {
   Question.findById(req.params.id)
   .populate('askedBy votes votes.votedBy answers answers.answeredBy')
