@@ -19,4 +19,15 @@ methods.createQuestion = (req, res) => {
   })
 }
 
+methods.getAllQuestion = (req, res) => {
+  Question.find({})
+  .populate('askedBy votes answers')
+  .exec((error, response) => {
+    if (error) res.json({error})
+    res.send(response)
+    console.log('Get All Question success');
+    console.log(response);
+  })
+}
+
 module.exports = methods

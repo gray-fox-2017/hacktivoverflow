@@ -14,5 +14,6 @@ router.put('/edituser/:id', userController.editUser)  // password harus disertak
 router.delete('/deleteuser/:id', userController.deleteUserById)
 
 router.post('/createquestion', questionController.createQuestion)
+router.get('/allquestion', questionController.getAllQuestion)
 
 module.exports = router
