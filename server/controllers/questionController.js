@@ -19,9 +19,20 @@ methods.createQuestion = (req, res) => {
   })
 }
 
+methods.createAnswer = (req, res) => {
+  Question.findById(req.params.id, (error, question) => {
+    if (error) res.json({error})
+    question.answers.push(req.body.answers)
+    question.save((err, record) => {
+      if (err) res.json({err})
+      res.send(record)
+    })
+  })
+}
+
 methods.getAllQuestion = (req, res) => {
   Question.find({})
-  .populate('askedBy votes answers')
+  .populate('askedBy votes votes.votedBy answers answers.answeredBy')
   .exec((error, response) => {
     if (error) res.json({error})
     res.send(response)
@@ -32,7 +43,7 @@ methods.getAllQuestion = (req, res) => {
 
 methods.getDetailQuestion = (req, res) => {
   Question.findById(req.params.id)
-  .populate('askedBy votes answers')
+  .populate('askedBy votes votes.votedBy answers answers.answeredBy')
   .exec((error, response) => {
     if (error) res.json({error})
     res.send(response)
@@ -43,7 +54,7 @@ methods.getDetailQuestion = (req, res) => {
 
 methods.updateQuestion = (req, res) => {
   Question.findById(req.params.id)
-  .populate('askedBy votes answers')
+  .populate('askedBy votes votes.votedBy answers answers.answeredBy')
   .exec((error, question) => {
     if (error) res.json({error})
     console.log('Get Detail Question success');
