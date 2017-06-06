@@ -32,7 +32,7 @@ methods.createAnswer = (req, res) => {
 
 methods.getAllQuestion = (req, res) => {
   Question.find({})
-  .populate('askedBy votes votes.votedBy answers answers.answeredBy')
+  .populate('askedBy votes votes.votedBy answers answers.answeredBy answers.votes.votedBy')
   .exec((error, response) => {
     if (error) res.json({error})
     res.send(response)
@@ -43,7 +43,7 @@ methods.getAllQuestion = (req, res) => {
 
 methods.getDetailQuestion = (req, res) => {
   Question.findById(req.params.id)
-  .populate('askedBy votes votes.votedBy answers answers.answeredBy')
+  .populate('askedBy votes votes.votedBy answers answers.answeredBy answers.votes.votedBy')
   .exec((error, response) => {
     if (error) res.json({error})
     res.send(response)
@@ -54,7 +54,7 @@ methods.getDetailQuestion = (req, res) => {
 
 methods.getDetailAnswerByQuestion = (req, res) => {
   Question.findById(req.params.questionid)
-  .populate('askedBy votes votes.votedBy answers answers.answeredBy')
+  .populate('askedBy votes votes.votedBy answers answers.answeredBy answers.votes.votedBy')
   .then(response => {
     let detailAnswer = response.answers.filter(answer => {
       // console.log('questionid');
@@ -88,6 +88,39 @@ methods.voteToQuestion = (req, res) => {
       })
     } else {
       question.votes.push(req.body.votes)
+      question.voteCounts = question.votes.length
+      console.log('cek voteCounts question');
+      console.log(question.voteCounts);
+      question.save((err, record) => {
+        if (err) res.json({err})
+        console.log(record);
+        res.json({
+          statusVote: err == null ? true : false
+        })
+      })
+    }
+  })
+}
+
+methods.voteToAnswer = (req, res) => {
+  Question.findById(req.params.questionid, (error, question) => {
+    if (error) res.json({error})
+    let index = question.answers.findIndex(data => data._id == req.params.answerid)
+    console.log('ini index answer');
+    console.log(index);
+    let exist = question.answers[index].votes.some(data => data.votedBy == req.body.userActive)
+    console.log('Cek status vote');
+    console.log(exist);
+    if (exist) {
+      res.json({
+        statusVote: false,
+        message: 'You have already voted'
+      })
+    } else {
+      question.answers[index].votes.push(req.body.votes)
+      question.answers[index].voteCounts = question.answers[index].votes.length
+      console.log('cek voteCounts anwer');
+      console.log(question.answers[index].voteCounts);
       question.save((err, record) => {
         if (err) res.json({err})
         console.log(record);
@@ -101,7 +134,7 @@ methods.voteToQuestion = (req, res) => {
 
 methods.updateQuestion = (req, res) => {
   Question.findById(req.params.id)
-  .populate('askedBy votes votes.votedBy answers answers.answeredBy')
+  .populate('askedBy votes votes.votedBy answers answers.answeredBy answers.votes.votedBy')
   .exec((error, question) => {
     if (error) res.json({error})
     console.log('Get Detail Question success');

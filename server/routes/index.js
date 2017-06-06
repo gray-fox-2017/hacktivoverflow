@@ -19,6 +19,7 @@ router.get('/allquestion', questionController.getAllQuestion)
 router.get('/detailquestion/:id', questionController.getDetailQuestion)
 router.get('/detailanswer/:questionid/:answerid', questionController.getDetailAnswerByQuestion)
 router.put('/votequestion/:id', questionController.voteToQuestion)
+router.put('/voteanswer/:questionid/:answerid', questionController.voteToAnswer)
 router.put('/editquestion/:id', questionController.updateQuestion)
 router.delete('/deletequestion/:id', questionController.deleteQuestion)
 
