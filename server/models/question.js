@@ -20,6 +20,10 @@ let questionSchema = new Schema({
   tags: [],
   answers: [answerSchema],
   votes: [voteSchema],
+  voteCounts: {
+    type: Number,
+    default: 0
+  },
   createdDate: {
     type: Date,
     default: new Date()

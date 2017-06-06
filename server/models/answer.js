@@ -13,6 +13,10 @@ let answerSchema = new Schema({
     required: true
   },
   votes: [voteSchema],
+  voteCounts: {
+    type: Number,
+    default: 0
+  },
   createdDate: {
     type: Date,
     default: new Date()
