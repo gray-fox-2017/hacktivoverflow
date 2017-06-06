@@ -69,4 +69,13 @@ methods.updateQuestion = (req, res) => {
   })
 }
 
+methods.deleteQuestion = (req, res) => {
+  Question.findByIdAndRemove(req.params.id, (error, response) => {
+    if (error) req.json({error})
+    res.send(response)
+    console.log('Delete question success');
+    console.log(response);
+  })
+}
+
 module.exports = methods

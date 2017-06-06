@@ -16,6 +16,7 @@ router.delete('/deleteuser/:id', userController.deleteUserById)
 router.post('/createquestion', questionController.createQuestion)
 router.get('/allquestion', questionController.getAllQuestion)
 router.get('/detailquestion/:id', questionController.getDetailQuestion)
-router.put('/editQuestion/:id', questionController.updateQuestion)
+router.put('/editquestion/:id', questionController.updateQuestion)
+router.delete('/deletequestion/:id', questionController.deleteQuestion)
 
 module.exports = router

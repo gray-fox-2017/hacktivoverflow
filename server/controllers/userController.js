@@ -103,11 +103,12 @@ methods.getUserById = (req, res) => {
 methods.editUser = (req, res) => {
   let pwdUser = req.body.password
     User.findById(req.params.id)
-    .then(response => {
+    .exec((error, response) => {
+      if (error) res.json({error})
       console.log(response._id);
       console.log('Masuk gakkk: '+ req.body.name);
       console.log('pwd hash di editUser:  '+bCrypt.hashSync(pwdUser, saltRounds));
-      User.updateOne({
+      User.findByIdAndUpdate({
         "_id": response._id
       }, {
         $set: {
@@ -116,26 +117,23 @@ methods.editUser = (req, res) => {
           "password": bCrypt.hashSync(pwdUser, saltRounds) || response.password,
           "email": req.body.email || response.email
         }
+      }, {
+        new: true
       })
-      .then(result => {
-        res.json(response)
+      .exec((err, result) => {
+        if (err) res.json({err})
+        res.json(result)
+        console.log('edit user success');
       })
-    })
-    .catch(err => {
-      console.log('Error, masuk catch');
     })
 } //editUser
 
 methods.deleteUserById = (req, res) => {
-    User.findById(req.params.id, (err, record) => {
-      User.deleteOne({
-        "_id": record._id
-      }, (err, response) => {
-        if (err) res.json({err})
-        console.log('Delete user success');
-        console.log(record);
-        res.json(record)
-      })
+    User.findByIdAndRemove(req.params.id, (err, record) => {
+      if (err) res.json({err})
+      console.log('Delete user success');
+      console.log(record);
+      res.json(record)
     })
 } //deleteUser
 
