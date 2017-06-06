@@ -30,4 +30,15 @@ methods.getAllQuestion = (req, res) => {
   })
 }
 
+methods.getDetailQuestion = (req, res) => {
+  Question.findById(req.params.id)
+  .populate('askedBy votes answers')
+  .exec((error, response) => {
+    if (error) res.json({error})
+    res.send(response)
+    console.log('Get Detail Question success');
+    console.log(response);
+  })
+}
+
 module.exports = methods
