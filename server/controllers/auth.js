@@ -33,7 +33,6 @@ var signup = function(req, res, next) {
 
   var newUser = new User({
     name: req.body.name,
-    username: req.body.username,
     email: req.body.email,
     password: hash
   })
@@ -61,6 +60,22 @@ var userInfo = function(req, res, next) {
   }
 }
 
+var userData = function(req, res, next) {
+  let token = req.body.token
+
+  if(token) {
+    jwt.verify(token, sec, (err, decoded) => {
+      if(!err) {
+        res.send(decoded)
+      } else {
+        res.send(err)
+      }
+    })
+  } else {
+    res.send({msg: 'Not logged in'})
+  }
+}
+
 var authUser = function(req, res, next) {
   let token = req.body.token
 
@@ -78,5 +93,5 @@ var authUser = function(req, res, next) {
 }
 
 module.exports = {
-  login, signup, userInfo, authUser
+  login, signup, userInfo, authUser, userData
 };

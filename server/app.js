@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+var cors = require('cors');
 var app = express()
 var mongoose = require('mongoose');
 var users = require('./routes/users');
@@ -15,7 +16,7 @@ var current_env = app.settings.env
 
 mongoose.connect(db_config[current_env])
 
-
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 

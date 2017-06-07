@@ -7,4 +7,6 @@ router.post('/signup', auth.signup)
 
 router.post('/login', auth.login)
 
+router.post('/getdata', auth.userData)
+
 module.exports = router;

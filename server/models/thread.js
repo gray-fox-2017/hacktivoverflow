@@ -11,6 +11,7 @@ var threadSchema = mongoose.Schema({
       required: [true, 'Please enter thread\'s content']
     },
     creator: { type: Schema.Types.ObjectId, ref: 'User' },
+    replies: [{type: Schema.Types.ObjectId, ref: 'Response' }]
     upvotes: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     downvotes: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     createdAt: Date,
