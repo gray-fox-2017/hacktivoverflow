@@ -23,6 +23,7 @@ methods.createAnswer = (req, res) => {
   Question.findById(req.params.id, (error, question) => {
     if (error) res.json({error})
     question.answers.push(req.body.answers)
+    question.answerCounts = question.answers.length
     question.save((err, record) => {
       if (err) res.json({err})
       res.send(record)

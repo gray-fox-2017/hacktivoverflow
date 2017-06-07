@@ -19,6 +19,10 @@ let questionSchema = new Schema({
   },
   tags: [],
   answers: [answerSchema],
+  answerCounts: {
+    type: Number,
+    default: 0
+  },
   votes: [voteSchema],
   voteCounts: {
     type: Number,
