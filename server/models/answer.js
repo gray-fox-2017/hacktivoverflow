@@ -6,7 +6,6 @@ var answerSchema = new Schema({
       type: String,
       required: [true, 'Fill the title please!']
   },
-  parent: { type: Schema.Types.ObjectId, ref: 'Question' },
   creator: { type: Schema.Types.ObjectId, ref: 'User' },
   upvotes: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   downvotes: [{ type: Schema.Types.ObjectId, ref: 'User' }],
