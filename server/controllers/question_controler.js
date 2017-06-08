@@ -1,9 +1,6 @@
 var router = express.Router()
 var mongoose = require('mongoose')
 const question_model = require('../models/question.js')
-var jwt = require('jsonwebtoken');
-var bcrypt = require('bcrypt');
-const saltRounds = 10;
 
 var methods = {}
 //cara 1, save is more faster than .create
