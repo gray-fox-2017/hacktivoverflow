@@ -17,8 +17,7 @@ methods.signUp = function(req, res){
     var user = new user_model({
       username: req.body.username,
       password: hash,
-      email: req.body.email,
-      role: req.body.role
+      email: req.body.email
     })
     user.save(function(err,result){
       console.log('usernya', user);
@@ -32,7 +31,7 @@ methods.signIn = function(req, res) {
   let password = req.body.password
   user_model.find({username: username, password: password}, function(err, result) {
     if (bcrypt.compare(req.body.password, result.password)) {
-      var token = jwt.sign({username: result.username, email: result.email, role: result.role}, process.env.SECRET)
+      var token = jwt.sign({username: result.username, email: result.email}, process.env.SECRET)
       res.send(token)
     } else {
       res.send('Silahkan Login terlebih dahhulu')
