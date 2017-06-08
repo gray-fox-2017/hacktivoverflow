@@ -10,11 +10,13 @@
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^1.0.2",
+    "body-parser": "^1.17.2",
     "cors": "^2.8.3",
     "dotenv": "^4.0.0",
     "email-validator": "^1.0.7",
     "express": "^4.15.3",
     "jsonwebtoken": "^7.4.1",
-    "mongoose": "^4.10.5"
+    "mongoose": "^4.10.5",
+    "nodemon": "^1.11.0"
   }
 }
