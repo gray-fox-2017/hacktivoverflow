@@ -79,7 +79,11 @@ methods.getDetailAnswerByQuestion = (req, res) => {
 methods.voteToQuestion = (req, res) => {
   Question.findById(req.params.id, (error, question) => {
     if (error) res.json({error})
-    let exist = question.votes.some(data => data.votedBy == req.body.userActive)
+    // let exist = question.votes.some(data => data.votedBy == req.body.userActive)
+    console.log('*****');
+    console.log(req.body.votes.vote);
+    exist = question.votes.some(data => data.votedBy == req.body.userActive)
+
     console.log('Cek status vote');
     console.log(exist);
     if (exist) {
@@ -89,16 +93,32 @@ methods.voteToQuestion = (req, res) => {
       })
     } else {
       question.votes.push(req.body.votes)
-      question.voteCounts = question.votes.length
-      console.log('cek voteCounts question');
-      console.log(question.voteCounts);
-      question.save((err, record) => {
-        if (err) res.json({err})
-        console.log(record);
-        res.json({
-          statusVote: err == null ? true : false
+      if (req.body.votes.vote == 1) {
+        question.voteCounts = question.votes.length
+        console.log('cek voteCounts question');
+        console.log(question.voteCounts);
+        question.save((err, record) => {
+          if (err) res.json({err})
+          console.log(record);
+          res.json({
+            statusVote: err == null ? true : false,
+            message: 'Upvote questions success'
+          })
         })
-      })
+      }
+      else {
+        question.voteCounts -= 1
+        console.log('cek voteCounts question');
+        console.log(question.voteCounts);
+        question.save((err, record) => {
+          if (err) res.json({err})
+          console.log(record);
+          res.json({
+            statusVote: err == null ? true : false,
+            message: 'Donwvote question success'
+          })
+        })
+      }
     }
   })
 }
@@ -110,6 +130,7 @@ methods.voteToAnswer = (req, res) => {
     console.log('ini index answer');
     console.log(index);
     let exist = question.answers[index].votes.some(data => data.votedBy == req.body.userActive)
+
     console.log('Cek status vote');
     console.log(exist);
     if (exist) {
@@ -119,16 +140,31 @@ methods.voteToAnswer = (req, res) => {
       })
     } else {
       question.answers[index].votes.push(req.body.votes)
-      question.answers[index].voteCounts = question.answers[index].votes.length
-      console.log('cek voteCounts anwer');
-      console.log(question.answers[index].voteCounts);
-      question.save((err, record) => {
-        if (err) res.json({err})
-        console.log(record);
-        res.json({
-          statusVote: err == null ? true : false
+      if (req.body.votes.vote == 1) {
+        question.answers[index].voteCounts = question.answers[index].votes.length
+        console.log('cek voteCounts anwer');
+        console.log(question.answers[index].voteCounts);
+        question.save((err, record) => {
+          if (err) res.json({err})
+          console.log(record);
+          res.json({
+            statusVote: err == null ? true : false,
+            message: 'Upvote answer success'
+          })
         })
-      })
+      } else if (req.body.votes.vote == -1){
+        question.answers[index].voteCounts -= 1
+        console.log('cek voteCounts anwer');
+        console.log(question.answers[index].voteCounts);
+        question.save((err, record) => {
+          if (err) res.json({err})
+          console.log(record);
+          res.json({
+            statusVote: err == null ? true : false,
+            message: 'Downvote answer success'
+          })
+        })
+      }
     }
   })
 }

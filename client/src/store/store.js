@@ -11,7 +11,10 @@ export const store = new Vuex.Store({
     user: [],
     signIn: [],
     dataTags: [],
-    dataQuestions: []
+    dataQuestions: [],
+    detailQuestion: [],
+    dateConvert: '',
+    timeConvert: ''
   },
   getters: getters.Getters,
   mutations: mutations.Mutations,

@@ -7,5 +7,8 @@ export const Getters = {
   },
   dataQuestions: (state) => {
     return state.dataQuestions
+  },
+  detailQuestion: (state) => {
+    return state.detailQuestion
   }
 }

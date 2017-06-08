@@ -54,5 +54,29 @@ export const Actions = {
       console.log(error);
       console.log('error, masuk ke catch');
     })
+  },
+  detailQuestion: ({commit}, payload) => {
+    axios.get(`http://localhost:3000/detailquestion/${payload.id}`)
+    .then(response => {
+      console.log('Action get DetailQuestion');
+      console.log(response.data);
+      commit('detailquestion', response.data)
+    })
+    .catch(error => {
+      console.log(error);
+      console.log('error, masuk ke catch');
+    })
+  },
+  editQuestion: ({commit}, payload) => {
+    axios.put(`http://localhost:3000/editquestion/${payload.id}`)
+    .then(response => {
+      console.log('Action get EditQuestion');
+      console.log(response.data);
+      commit('editQuestion', response.data)
+    })
+    .catch(error => {
+      console.log(error);
+      console.log('error, masuk ke catch');
+    })
   }
 }
