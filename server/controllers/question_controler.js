@@ -10,26 +10,23 @@ var methods = {}
 methods.add_question = function(req, res, next){
     var question = new question_model({
       title:req.body.title,
-      text:req.body.text,
-      author : req.body.author
+      body:req.body.body,
+      creator: req.body.creator,
+      replies: [],
+      upvotes: [],
+      downvotes: [],
+      createdAt: new Date(),
+      updatedAt: new Date()
     })
     question.save(function(err,result){
       if(!err) res.send(result)
       else res.send(err.message)
     })
 }
-//cara 2
-methods.add_question2 = function(req, res, next) {
-  let query = {title:req.body.title, text:req.body.text, author:req.body.author}
-  question_model.create(query, function(err, question) {
-    if(!err) res.send(question)
-    else res.send(err)
-  })
-}
 
 methods.getAllquestion = function(req, res, next) {
-  question_model.find(function(err, question) {
-    if(!err) res.send(question)
+  question_model.find({}, function(err, result) {
+    if(!err) res.send(result)
     else console.log(err);
   })
 }
@@ -46,11 +43,49 @@ methods.delete_question = function(req, res, next) {
 
 methods.update_question = function(req, res, next) {
   let id = req.params._id
-  let query_update = {title: req.body.title, text: req.body.text, author: req.body.author}
+  let query_update = {title: req.body.title, body: req.body.body, creator: req.body.creator}
 
-  question_model.findOneAndUpdate({_id:id}, {$set : {title: req.body.title, text: req.body.text, author: req.body.author}}, function(err, result) {
+  question_model.findOneAndUpdate({_id:id}, {$set : {title: req.body.title, body: req.body.body, creator: req.body.creator, updatedAt: new Date()}}, function(err, result) {
     if(!err) res.send("update successful\n"+ result)
     else res.send(err.message)
+  })
+}
+
+methods.upvote = function(req, res) {
+  let id = req.params._id
+  question_model.findById(id, (err, result) {
+    if (result.creator == req.body.user) {
+      var index_up = result.upvotes.indexOf(req.body.user)
+      var index_down = result.downvotes.indexOf(req.body.user)
+      if (index_up == -1 && index_down == -1) {
+        result.upvotes.push(req.body.user)
+      } else if (index_down !== -1) {
+        result.downvotes.splice(index_down, 1)
+      }
+      result.save((err, updated_result) {
+        if (!err) res.send(updated_result)
+        else res.send(err)
+      })
+    }
+  })
+}
+
+methods.downvotes = function(req, res) {
+  let id = req.params._id
+  question_model.findById(id, (err, result) {
+    if (result.creator == req.body.user) {
+      var index_up = result.upvotes.indexOf(req.body.user)
+      var index_down = result.downvotes.indexOf(req.body.user)
+      if (index_up == -1 && index_down == -1) {
+        result.downvotes.push(req.body.user)
+      } else if (index_down !== -1) {
+        result.upvotes.splice(index_down, 1)
+      }
+      result.save((err, updated_result) {
+        if (!err) res.send(updated_result)
+        else res.send(err)
+      })
+    }
   })
 }
 
