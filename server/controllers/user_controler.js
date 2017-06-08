@@ -2,40 +2,31 @@ var express = require('express')
 var router = express.Router()
 var mongoose = require('mongoose')
 const user_model = require('../models/user.js')
-var bcrypt = require('bcrypt');
-const saltRounds = 10;
-var salt = bcrypt.genSaltSync(saltRounds);
-var jwt = require('jsonwebtoken');
-require('dotenv').config()
 
 var methods = {}
-//cara 1, save is more faster than .create
-methods.signUp = function(req, res){
 
-    var hash = bcrypt.hashSync(req.body.password, salt);
-    console.log('hasnyanyaaaa ',hash);
-    var user = new user_model({
-      username: req.body.username,
-      password: hash,
-      email: req.body.email
-    })
-    user.save(function(err,result){
-      console.log('usernya', user);
-      if(!err) res.send('success \n'+result)
-      else res.send(err.message)
-    })
+methods.getAlluser = function(req, res, next) {
+  user_model.find({}, function(err, result) {
+    if(!err) res.send(result)
+    else console.log(err);
+  })
+}
+//method deleteOne can also use remove, deleteOne with promise .then / callback and deleteMany
+methods.delete_user = function(req, res, next) {
+  user_model.deleteOne({_id:req.params.id}, function(err, result) {
+    if(!err) res.send("success deleted")
+    else res.send(err)
+  })
 }
 
-methods.signIn = function(req, res) {
-  let username = req.body.username
-  let password = req.body.password
-  user_model.find({username: username, password: password}, function(err, result) {
-    if (bcrypt.compare(req.body.password, result.password)) {
-      var token = jwt.sign({username: result.username, email: result.email}, process.env.SECRET)
-      res.send(token)
-    } else {
-      res.send('Silahkan Login terlebih dahhulu')
-    }
+//trying using findOneandDelete
+//docs : http://mongoosejs.com/docs/api.html#model_Model.findOneAndUpdate
+
+methods.update_user = function(req, res, next) {
+  let id = req.params._id
+  user_model.findOneAndUpdate({_id:id}, {$set : {username: req.body.username, password: req.body.password, email: req.body.email}}, function(err, result) {
+    if(!err) res.send("update successful\n"+ result)
+    else res.send(err.message)
   })
 }
 
