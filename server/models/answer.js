@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var answerSchema = new Schema({
-  answerContent: {
+  answerBody: {
       type: String,
       required: [true, 'Fill the title please!']
   },
