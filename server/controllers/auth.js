@@ -45,7 +45,6 @@ var signup = function(req, res, next) {
 
 var userInfo = function(req, res, next) {
   let token = req.body.token
-  console.log(token)
   if(token) {
     jwt.verify(token, sec, (err, decoded) => {
       if(!err) {

@@ -9,10 +9,8 @@ var create = function(req, res) {
   })
   newThread.save((err, createdThread) => {
     if(err) {
-      console.log('masuk error');
       res.send(err)
     } else {
-      console.log('yeay');
       res.send(createdThread)
     }
   })

@@ -8,6 +8,10 @@ router.get('/', threadctrl.get)
 
 router.get('/:id/replies', threadctrl.getOne)
 
+router.get('/:id/reply', responsectrl.get)
+
+router.get('/:id/reply/:repid', responsectrl.getOne)
+
 router.post('/', auth.userInfo, threadctrl.create)
 
 router.post('/:id/reply', auth.userInfo, responsectrl.create)

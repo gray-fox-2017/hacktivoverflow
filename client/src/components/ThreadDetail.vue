@@ -11,18 +11,20 @@
     <div class="row">
       <div class="col-md-1">
         <div class="text-center" title="This thread is useful">
-          <i v-if="!upvoted" @click="doUpvote" class="fa fa-caret-up" aria-hidden="true" style="font-size: 3em;"></i>
-          <i v-if="upvoted" class="fa fa-caret-up" aria-hidden="true" style="font-size: 3em; color: green;"></i>
+          <i v-if="!token" class="fa fa-caret-up" aria-hidden="true" style="font-size: 3em;"></i>
+          <i v-if="!upvoted && token" @click="doUpvote" class="fa fa-caret-up" aria-hidden="true" style="font-size: 3em; cursor: pointer"></i>
+          <i v-if="upvoted" class="fa fa-caret-up" aria-hidden="true" style="font-size: 3em; color: green; cursor: pointer"></i>
         </div>
         <div class="text-center" title="This thread is useful">
           <span>{{ thread.upvotes.length - thread.downvotes.length }}</span>
         </div>
         <div class="text-center" title="This thread is unclear or not useful">
-          <i v-if="!downvoted" @click="doDownvote" class="fa fa-caret-down" aria-hidden="true" style="font-size: 3em;"></i>
-          <i v-if="downvoted" class="fa fa-caret-down" aria-hidden="true" style="font-size: 3em; color: red;"></i>
+          <i v-if="!token" class="fa fa-caret-down" aria-hidden="true" style="font-size: 3em;"></i>
+          <i v-if="!downvoted && token" @click="doDownvote" class="fa fa-caret-down" aria-hidden="true" style="font-size: 3em; cursor: pointer"></i>
+          <i v-if="downvoted" class="fa fa-caret-down" aria-hidden="true" style="font-size: 3em; color: red; cursor: pointer"></i>
         </div>
       </div>
-      <div class="col-md-7">
+      <div class="col-md-7 needpad">
         <p v-for="content in thread.threadContent.split('\n')">{{ content }}</p>
         <p>asked by: {{ thread.creator.name }}</p>
       </div>
@@ -39,21 +41,26 @@
         <button v-if="user.id === thread.creator._id" @click="deleteThread" type="button" class="btn btn-danger">Delete Thread</button>
       </div>
     </div>
-    <!-- <Reply :parent="thread._id"></Reply> -->
+    <Reply v-for="response in value" @delete="deleteValue" :repid="response._id" :parent="thread._id" :key="response._id"></Reply>
+    <NewReply v-model="value" v-on:create="updateValue"></NewReply>
   </div>
 </template>
 
 <script>
 import NewThread from '@/components/NewThread'
+import Reply from '@/components/Reply'
+import NewReply from '@/components/NewReply'
 export default {
   components: {
-    NewThread
+    NewThread,
+    Reply,
+    NewReply
   },
   data () {
     return {
       thread: {
         title: null,
-        threadContent: null,
+        threadContent: '',
         creator: {
           name: ''
         },
@@ -61,10 +68,14 @@ export default {
         upvotes: [],
         downvotes: []
       },
-      token: localStorage.getItem('token'),
-      user: JSON.parse(localStorage.getItem('user')),
+      token: localStorage.getItem('token') || false,
+      user: JSON.parse(localStorage.getItem('user')) || {
+        id: '',
+        name: ''
+      },
       downvoted: false,
-      upvoted: false
+      upvoted: false,
+      value: []
     }
   },
   methods: {
@@ -74,9 +85,9 @@ export default {
       this.axios.get(`http://localhost:3000/api/threads/${thread}/replies`)
       .then(response => {
         self.thread = response.data
+        self.value = response.data.replies
         self.upvoted = response.data.upvotes.includes(self.user.id)
         self.downvoted = response.data.downvotes.includes(self.user.id)
-        console.log(self.thread.threadContent.split('\n'))
       })
       .catch(err => console.log(err))
     },
@@ -126,6 +137,14 @@ export default {
     editThread () {
       let self = this
       console.log(self.thread)
+    },
+    updateValue (tes) {
+      this.value.push(tes)
+    },
+    deleteValue (tes) {
+      this.value = this.value.filter(function (el) {
+        return el._id !== tes._id
+      })
     }
   },
   created () {
@@ -139,5 +158,8 @@ export default {
   padding: 10px 0;
   border-bottom: 1px solid lightgrey;
   margin-bottom: 20px;
+}
+.needpad {
+  padding-top: 20px;
 }
 </style>

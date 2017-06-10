@@ -4,7 +4,7 @@
       <div class="col-md-9">
         <ThreadList :user="user"></ThreadList>
       </div>
-      <div class="col-md-3">
+      <div class="col-md-3" v-if="token">
         <NewThread :creator="token"></NewThread>
       </div>
     </div>

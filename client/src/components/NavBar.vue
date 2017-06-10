@@ -39,6 +39,7 @@ export default {
   methods: {
     signOut () {
       localStorage.removeItem('token')
+      localStorage.removeItem('user')
       window.location.reload()
     }
   }
