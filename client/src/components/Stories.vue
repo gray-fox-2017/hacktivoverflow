@@ -3,7 +3,6 @@
       <div class="col-md-12 col-sm-12 col-xs-12" id="head">
             <h3>Stories</h3>
       </div>
-	<div class="row">
 <div class="container">
   <div class="row ">
     <div v-if="isRead === true">
@@ -31,23 +30,39 @@
                 <br>
                 <div><button type="button" v-on:click="readStory(story._id)" class="btn btn-success">Read Story</button></div>
                 <br>
-                <div><button type="button" class="btn btn-primary">Comment</button></div>
+                <div><button type="button" class="btn btn-primary" v-on:click="listComment(story._id,index)">Comments</button></div>
             </div>
             <a class=" vote btn btn-default" v-if="story.upvote.indexOf(user._id)" v-on:click="like(story._id,index,user._id)"><span class="glyphicon glyphicon-thumbs-up"></span></a>
             <a class=" vote btn btn-default" v-if="story.downvote.indexOf(user._id)" v-on:click="dislike(story._id,index,user._id)"><span class="glyphicon glyphicon-thumbs-down"></span></a>
-            <!-- <a class=" vote btn btn-success" v-else><span class="glyphicon glyphicon-ok"></span>Voted</a> -->
+            <!-- <a class=" vote btn btn-success" v-else><span class="glyphicon glyphicon-ok"></span>Voted</a> -->                              
+            <div class="comment-section" v-if="isComment === true && currentComment === story._id">
+              <button type="button" class="cl btn btn-danger" v-on:click="closeComment()">X</button>
+                 <div class="comments-list" v-for="(idea,index) in ideas" >
+                   <hr>
+                   <h4><b>{{idea.creator}}</b></h4>
+                   <p>{{idea.idea}}</p>
+                   <p class="creator">{{idea.createdAt}}</p>
+                   <a v-if="idea.user_id === user._id" v-on:click="confirmDelCom(idea._id,index)" class="btn btn-sm btn-danger"><span class="glyphicon glyphicon-trash"></span></a>
+                   <a v-if="idea.user_id === user._id" class="btn btn-sm btn-info" v-on:click="onEditComment(idea._id,index)"><span class="glyphicon glyphicon-pencil"></span></a>
+                   <form v-if="currentCommentIndex === idea._id">
+                     <textarea class="editcomment" rows="7" v-model="editIdea"></textarea>
+                     <br>
+                     <button type="button" class="cl btn btn-danger" v-on:click="closeEditComment()">X</button>
+                     <button type="button" class="btn btn-sm btn-primary" v-on:click="editComment(idea._id,index)">Submit</button>
+                   </form>
+                 </div>
+                 <br>
+              <textarea type="text" v-model="idea" rows="7" placeholder="Add Comment"></textarea>
+              <button type="button" class="btn btn-sm btn-primary" v-on:click="createComment(story._id)">Comment</button>  
+            </div>  
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
 </div>
-</div>
-</div>
 </template>
-<script>
-(adsbygoogle = window.adsbygoogle || []).push({});
-</script>
 <script>
 export default {
   name:'stories',
@@ -56,7 +71,13 @@ export default {
       stories:[],
       isRead:false,
       title: "",
-      story: ""
+      story: "",
+      isComment: false,
+      ideas: [],
+      idea:"",
+      currentComment:"",
+      currentCommentIndex:"",
+      editIdea:""
     }
   },
   methods:{
@@ -77,7 +98,6 @@ export default {
         self.title = response.data.title
         self.story = response.data.story
         self.isRead = true
-        console.log(self.isRead);
       })
       .catch(err=>{
         console.log(err);
@@ -153,6 +173,80 @@ export default {
           })
         }
       })
+    },
+    listComment(id){
+      let self = this;
+      axios.get(`http://localhost:3000/ideas/${id}`)
+      .then(response=>{
+        self.ideas = response.data
+        self.isComment = true
+        self.currentComment = id
+      })
+      .catch(err=>{
+        console.log(err);
+      })
+    },
+    createComment(story_id){
+      let self = this;
+      let user = JSON.parse(localStorage.getItem('token'))
+      axios.post(`http://localhost:3000/ideas`,{
+        idea: self.idea,
+        user_id: user._id,
+        story_id: story_id,
+        creator: user.name,
+        createdAt: new Date().toUTCString()
+      })
+      .then(response=>{
+        self.ideas.push(response.data)
+        self.idea = ""
+      })
+      .catch(err=>{
+        console.log(err);
+      })
+    },
+    deleteComment(id,index){
+      let self = this;
+      axios.delete(`http://localhost:3000/ideas/${id}`)
+      .then(response=>{
+        self.ideas.splice(index,1)
+      })
+      .catch(err=>{
+        console.log(err);
+      })
+    },
+    confirmDelCom(id,index){
+      if(confirm(`Are You Sure You Want to Delete This Comment?`)){
+        this.deleteComment(id,index)
+      }
+      else{
+        return false
+      }
+    },
+    closeComment(){
+      this.isComment = false
+      this.idea = ""
+    },
+    editComment(id,index){
+      let self = this;
+      axios.put(`http://localhost:3000/ideas/${id}`,{
+        idea: self.editIdea,
+        createdAt: new Date().toUTCString()
+      })
+      .then(response=>{
+        self.ideas[index].idea = self.editIdea
+        self.ideas[index].createdAt = new Date().toUTCString()
+        self.currentCommentIndex = ""
+      })
+      .catch(err=>{
+        console.log(err);
+      })
+    },
+    onEditComment(id,index){
+      this.editIdea = this.ideas[index].idea
+      this.currentCommentIndex = id
+    },
+    closeEditComment(){
+      this.currentCommentIndex = ""
     }
   },
   created: function() {
@@ -161,7 +255,13 @@ export default {
   computed:{
     user(){
       let user = JSON.parse(localStorage.getItem('token'))
-      return user
+      if(user){
+          return user
+      }
+      else{
+        alert(`You Must login first!`)
+        window.location('/')
+      }
     }
   }
 }
@@ -190,6 +290,14 @@ background-color: #C0E5D9;
 .creator{
   color:gray;
 }
+
+.editcomment{
+  color:black;
+}
+/*.cl{
+  position: fixed;
+  margin-top:500px;
+}*/
 
 .vote{
   margin-bottom: 20px;
@@ -302,4 +410,9 @@ right: 0;
 height: 1px;
 background: #CECECE;
 }
+
+.comments-list{
+  color:white;
+}
+
 </style>

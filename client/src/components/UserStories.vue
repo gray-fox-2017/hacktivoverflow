@@ -24,7 +24,7 @@
           </div>
           <div class="form-group col-12">
             <label>Story</label>
-            <textarea class="form-control" name="story" rows="10" v-model="story"></textarea>
+            <textarea class="form-control" rows="10" v-model="story"></textarea>
           </div>
           <div class="form-group col-12">
             <label>Note</label>
@@ -43,9 +43,9 @@
           <img class ="back" src="https://thumbs.dreamstime.com/t/pen-notepad-dark-background-d-render-mockup-identity-element-set-black-elements-black-backgnound-79699680.jpg" alt="planet" />
           <figcaption class ="content">
             <h1>{{story.title}}</h1>
-            <p>{{story.premise}}</p>
-            <p>{{story.note}}</p>
-            <a class="btn btn-danger" v-on:click="deleteStory(story._id,index)"><span class="glyphicon glyphicon-trash"></span>Delete</a>
+            <p class="premise">{{story.premise}}</p>
+            <p class="note">{{story.note}}</p>
+            <a class="btn btn-danger" v-on:click="confirmDel(story._id,index)"><span class="glyphicon glyphicon-trash"></span>Delete</a>
             <a class="btn btn-primary"><span class="glyphicon glyphicon-share"></span>Edit</a>
             <a class="btn btn-success" v-on:click="readStory(story._id)"><span class="glyphicon glyphicon-book"></span>Read Story</a>
           </figcaption>
@@ -86,7 +86,8 @@ export default {
         premise: self.premise,
         story: self.story,
         note: self.note,
-        creator: user._name,
+        createdAt: new Date().toUTCString(),
+        creator: user.name,
         user_id: user._id
       })
       .then(response=>{
@@ -106,13 +107,22 @@ export default {
         console.log(err);
       })
     },
+    confirmDel(id,index){
+      if(confirm(`Are You Sure You Want To Delete This Story?`)){
+        this.deleteStory(id,index)
+      }
+      else{
+        return false
+      }
+    },
     editStory(id,index){
       let self = this;
       axios.put(`http://localhost:3000/${id}`,{
         title: self.title,
         premise: self.premise,
         story: self.story,
-        note: self.note
+        note: self.note,
+        createdAt: new Date().toUTCString()
       })
       .then(response=>{
         axios.get(`http://localhost:3000/one/${id}`)
@@ -179,6 +189,13 @@ export default {
 .back {
   width: 372px;
   height: 234px;
+}
+
+.premise{
+  color: green;
+}
+.note{
+  color:red;
 }
 .services{
     margin: 20px auto;    

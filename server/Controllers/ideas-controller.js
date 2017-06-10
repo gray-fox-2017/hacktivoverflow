@@ -6,7 +6,10 @@ function createIdea (req,res,next){
   // let user = jwt.verify(req.body.user_id,process.env.PANDA)
   Ideas.create({
     idea: req.body.idea,
-    vote: [],
+    upvote: [],
+    downvote:[],
+    createdAt: req.body.createdAt,
+    creator: req.body.creator,
     user_id: req.body.user_id,
     story_id: req.body.story_id
   },function(err,result){
@@ -22,7 +25,9 @@ function editIdea (req,res,next){
       _id: req.params.id
     },{
       idea: req.body.idea || result.idea,
-      vote: req.body.vote || result.vote
+      upvote: req.body.upvote || result.vote,
+      downvote: req.body.downvote || result.downvote,
+      createdAt: req.body.createdAt || result.createdAt
     },function(err,result){
       res.send(`${req.body.idea} Updated!`)
     })

@@ -258,8 +258,8 @@ afterEach(function(done){
   })
 })
 
-describe('Get all ideas in GET /ideas/:id',function(){
-  it('should return all ideas',function(done){
+describe('Get all storys ideas in GET /ideas/:id',function(){
+  it('should return all ideas in a story',function(done){
     chai.request(server)
     .get(`/ideas/${idea_id}`)
     .end((err,res)=>{
@@ -273,7 +273,7 @@ describe('Get all ideas in GET /ideas/:id',function(){
 })
 
 describe('Get all ideas in GET /ideas',function(){
-  it('should return all stories',function(done){
+  it('should return all ideas',function(done){
     chai.request(server)
     .get('/ideas')
     .end((err,res)=>{

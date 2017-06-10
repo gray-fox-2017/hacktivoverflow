@@ -11,7 +11,7 @@ function createStory (req,res,next){
     story: req.body.story,
     creator: req.body.creator,
     note: req.body.note,
-    createdAt: new Date().toUTCString(),
+    createdAt: req.body.createdAt,
     upvote: [],
     downvote: [],
     user_id: req.body.user_id
@@ -30,7 +30,8 @@ function editStory (req,res,next){
       title: req.body.title || result.title,
       story: req.body.story || result.story,
       upvote: req.body.upvote || result.upvote,
-      downvote: req.body.downvote || result.downvote
+      downvote: req.body.downvote || result.downvote,
+      createdAt: req.body.createdAt || result.createdAt
     },function(err,result){
       res.send(`${req.body.title} Updated!`)
     })

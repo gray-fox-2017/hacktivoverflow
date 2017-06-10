@@ -17,7 +17,7 @@
   <!-- Collect the nav links, forms, and other content for toggling -->
   <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
     <ul class="nav navbar-nav">
-      <li><a href="/">Home</a></li>
+      <li><router-link to="/stories">Home</router-link></li>
        <!-- class="active" -->
       <li class="dropdown" v-if="isLogin === true">
         <a href="#" class="dropdown-toggle"  data-toggle="dropdown">Profile<span class="caret"></span></a>
@@ -129,8 +129,7 @@ export default {
     logout(){
       this.isLogin = false
       localStorage.clear()
-      location.reload()
-      console.log(`masuk logout`);
+      this.$router.push('/')
     },
     signup(){
       let self = this;
@@ -158,7 +157,7 @@ export default {
         console.log(typeof(response.data));
         alert(`Welcome to Storyoverflow ${self.username}`)
         localStorage.setItem('token',JSON.stringify(response.data))
-         window.location = '/'
+         this.$router.push('/user-stories')
       })
       .catch(err=>{
         console.log(err);
