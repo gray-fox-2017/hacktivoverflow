@@ -20,7 +20,7 @@
               <input type="password" name="password" v-model="user.password" placeholder="Password">
             </div>
           </div>
-          <div class="ui fluid large blue submit button" @click="getSignin">Login</div>
+          <div class="ui fluid large blue submit button" @click="signIn">Login</div>
         </div>
 
         <div class="ui error message"></div>
@@ -46,18 +46,21 @@ export default {
     }
   },
   methods:{
-    getSignin: function(){
+    signIn: function(){
       self = this
       axios.post('http://localhost:3000/auth/signin', {
-        user:self.user
+        username:self.user.username,
+        password:self.user.password
       })
       .then((response)=>{
-        console.log(response.data.token);
         var token = response.data.token
-        var user = response.data.name
-        window.localStorage.setItem('token', token)
-        window.localStorage.setItem('name', user)
-        window.location.href = 'http://localhost:8080/forum'
+        var user = response.data.username
+        console.log(user);
+        console.log(token);
+        window.localStorage.setItem('token',token)
+        window.localStorage.setItem('user', user)
+        self.$store.dispatch('changeToken')
+        self.$router.push('/')
         location.reload()
       })
       .catch((err)=>{

@@ -11,25 +11,25 @@
           <div class="field">
             <div class="ui left icon input">
               <i class="user icon"></i>
-              <input type="text" name="name" v-model="dataUser.name" placeholder="Name">
+              <input type="text" name="name" v-model="user.name" placeholder="Name">
             </div>
           </div>
           <div class="field">
             <div class="ui left icon input">
               <i class="mail icon"></i>
-              <input type="email" name="email" v-model="dataUser.email" placeholder="Email Address">
+              <input type="email" name="email" v-model="user.email" placeholder="Email Address">
             </div>
           </div>
           <div class="field">
             <div class="ui left icon input">
               <i class="at icon"></i>
-              <input type="text" name="usernma" v-model="dataUser.username" placeholder="Username">
+              <input type="text" name="usernma" v-model="user.username" placeholder="Username">
             </div>
           </div>
           <div class="field">
             <div class="ui left icon input">
               <i class="lock icon"></i>
-              <input type="password" name="password" v-model="dataUser.password" placeholder="Password">
+              <input type="password" name="password" v-model="user.password" placeholder="Password">
             </div>
           </div>
           <button class="ui fluid large blue submit button" @click="signUp">Signup</button>
@@ -49,7 +49,7 @@ export default {
   name: 'Signup',
   data() {
     return {
-      dataUser: {
+      user: {
         name: '',
         email: '',
         username: '',
@@ -60,14 +60,14 @@ export default {
   methods:{
     signUp(){
       let self=this;
-      console.log(this.dataUser);
+      console.log(this.user);
       axios.post('http://localhost:3000/auth/signup',{
-        name:self.dataUser.name,
-        email:self.dataUser.email,
-        username:self.dataUser.username,
-        password:self.dataUser.password
+        name:self.user.name,
+        email:self.user.email,
+        username:self.user.username,
+        password:self.user.password
       })
-      .then(response =>{
+      .then((response) =>{
         if (response.data.hasOwnProperty('error')) {
           console.log(response.data.error);
         }else {

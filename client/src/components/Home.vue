@@ -40,14 +40,14 @@
         </div>
 
         <div class="ui celled list" style="margin-top:5%;">
-          <div class="item">
+          <div class="item" v-for="(question,index) in list_question">
             <div class="content" style="margin-top:1%;margin-bottom:1%;">
               <div class="ui grid">
                 <div class="row">
                   <div class="column" style="width:10%">
                     <div class="ui small compact message flex-item">
                       <div class="header">
-                        0
+                        {{totalVotes(question.votes)}}
                       </div>
                       <p style="font-size:10px">Votes</p>
                     </div>
@@ -55,47 +55,18 @@
                   <div class="column" style="width:10%">
                     <div class="ui small compact positive message flex-item" >
                       <div class="header">
-                        0
+                        {{totalAnswers(question.answers)}}
                       </div>
                       <p style="font-size:10px">Answers</p>
                     </div>
                   </div>
                   <div class="column" style="width:70%; margin-top:2.5%">
-                    <a href="#">Pertanyaan1</a>
+                    <a @click="getDetilQuestion(question._id)">{{question.title}}</a>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div class="item" style="width:100%;">
-            <div class="content" style="margin-top:1%;margin-bottom:1%;">
-              <div class="ui grid">
-                <div class="row">
-                  <div class="column" style="width:10%">
-                    <div class="ui small compact message flex-item">
-                      <div class="header">
-                        0
-                      </div>
-                      <p style="font-size:10px">Votes</p>
-                    </div>
-                  </div>
-                  <div class="column" style="width:10%">
-                    <div class="ui small compact positive message flex-item" >
-                      <div class="header">
-                        0
-                      </div>
-                      <p style="font-size:10px">Answers</p>
-                    </div>
-                  </div>
-                  <div class="column" style="width:70%; margin-top:2.5%">
-                    <a href="#">Pertanyaan2</a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-
         </div>
       </div>
 
@@ -107,11 +78,34 @@ export default {
   name: 'Home',
   data() {
     return {
-
+      list_question:[]
     }
   },
   methods:{
-
+    totalVotes(arr){
+      return arr.reduce((total,value)=>{
+        return a + value.vote
+      },0)
+    },
+    totalAnswers(arr){
+      return arr.length
+    },
+    getDetilQuestion(id){
+      this.$router.push('/detil_question/' + id)
+    }
+  },
+  created(){
+    let self = this
+    let token = window.localStorage.getItem('token');
+    axios.get('http://localhost:3000/questions',{
+      headers:{
+        token:token
+      }
+    })
+    .then(response =>{
+      self.list_question=response.data;
+      console.log('self',self.list_question);
+    })
   }
 }
 </script>

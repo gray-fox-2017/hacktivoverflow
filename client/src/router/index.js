@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Signup from '@/components/Signup'
 import Login from '@/components/Login'
 import Home from '@/components/Home'
+import DetilQuestion from '@/components/DetilQuestion'
 
 
 Vue.use(Router)
@@ -23,6 +24,12 @@ export default new Router({
       path: '/login',
       name: 'Login',
       component: Login
+    },
+    {
+      path: '/detil_question/:id',
+      name: 'DetilQuestion',
+      component: DetilQuestion,
+      props:true
     }
   ]
 })
