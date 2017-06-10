@@ -15,7 +15,10 @@ export default {
   data () {
     return {
       token: null,
-      user: null
+      user: {
+        id: '',
+        name: ''
+      }
     }
   },
   methods: {
@@ -34,7 +37,7 @@ export default {
   },
   created () {
     this.getToken()
-    this.getUserData()
+    setTimeout(this.getUserData(), 3000)
   }
 }
 </script>

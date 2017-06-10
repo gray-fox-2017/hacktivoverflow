@@ -3,34 +3,41 @@ var Thread = require('../models/thread');
 var create = function(req, res) {
   let newThread = new Thread({
     title: req.body.title,
-    threadContent: req.body.content,
-    creator: req.body.user,
+    threadContent: req.body.threadContent,
+    creator: req.body.creator,
     createdAt: new Date()
   })
   newThread.save((err, createdThread) => {
     if(err) {
+      console.log('masuk error');
       res.send(err)
     } else {
+      console.log('yeay');
       res.send(createdThread)
     }
   })
 }
 
 var get = function(req, res) {
-  Thread.find(function (err, threads) {
+  Thread.find({})
+  .populate('creator')
+  .exec(function (err, threads) {
     res.send(err ? err : threads)
-  });
+  })
 }
 
 var getOne = function(req, res) {
-  Thread.findById(req.params.id, (err, thread) => {
-    res.send(err ? err: thread)
+  Thread.findById(req.params.id)
+  .populate('creator')
+  .populate('replies')
+  .exec(function (err, thread) {
+    res.send(err ? err : thread)
   })
 }
 
 var update = function(req, res) {
   Thread.findById(req.params.id, (err, thread) => {
-    if(thread.creator == req.body.user) {
+    if(thread.creator == req.body.creator) {
       thread.title = req.body.title || thread.title
       thread.threadContent = req.body.threadContent || thread.threadContent
       thread.updatedAt = new Date()
@@ -49,11 +56,11 @@ var update = function(req, res) {
 
 var upvote = function(req, res) {
   Thread.findById(req.params.id, (err, thread) => {
-    if(thread.creator == req.body.user) {
-      var idxUp = thread.upvotes.indexOf(req.body.user);
-      var idxDown = thread.downvotes.indexOf(req.body.user);
+    if(req.body.creator) {
+      var idxUp = thread.upvotes.indexOf(req.body.creator);
+      var idxDown = thread.downvotes.indexOf(req.body.creator);
       if(idxUp == -1 && idxDown == -1) {
-        thread.upvotes.push(req.body.user)
+        thread.upvotes.push(req.body.creator)
       } else if (idxDown !== -1) {
         thread.downvotes.splice(idxDown, 1)
       }
@@ -72,9 +79,11 @@ var upvote = function(req, res) {
 
 var downvote = function(req, res) {
   Thread.findById(req.params.id, (err, thread) => {
-    if(thread.creator == req.body.user) {
+    if(req.body.creator) {
+      var idxUp = thread.upvotes.indexOf(req.body.creator);
+      var idxDown = thread.downvotes.indexOf(req.body.creator);
       if(idxUp == -1 && idxDown == -1) {
-        thread.downvotes.push(req.body.user)
+        thread.downvotes.push(req.body.creator)
       } else if (idxUp !== -1) {
         thread.upvotes.splice(idxDown, 1)
       }
@@ -92,15 +101,9 @@ var downvote = function(req, res) {
 }
 
 var remove = function(req, res) {
-  Thread.findById(req.params.id, (err, thread) => {
-    if(thread.creator == req.body.user) {
-      Thread.findOneAndRemove({_id: req.params.id}, (err, thread) => {
-        if(err) res.send(err)
-        res.send(thread)
-      })
-    } else {
-      res.send('Not authorized')
-    }
+  Thread.findOneAndRemove({_id: req.params.id}, (err, thread) => {
+    if(err) res.send(err)
+    res.send(thread)
   })
 }
 

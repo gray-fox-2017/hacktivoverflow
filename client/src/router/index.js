@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Hello from '@/components/Hello'
+import MainPage from '@/components/MainPage'
 import Auth from '@/components/Auth'
+import ThreadDetail from '@/components/ThreadDetail'
 import BootstrapVue from 'bootstrap-vue'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
@@ -16,11 +17,15 @@ export default new Router({
   routes: [
     {
       path: '/',
-      component: Hello
+      component: MainPage
     },
     {
       path: '/registration',
       component: Auth
+    },
+    {
+      path: '/thread',
+      component: ThreadDetail
     }
   ]
 })

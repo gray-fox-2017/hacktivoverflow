@@ -6,7 +6,7 @@ var auth = require('../controllers/auth')
 
 router.get('/', threadctrl.get)
 
-router.get('/:id/replies', threadctrl.get)
+router.get('/:id/replies', threadctrl.getOne)
 
 router.post('/', auth.userInfo, threadctrl.create)
 
@@ -24,8 +24,8 @@ router.put('/:id/downvote', auth.userInfo, threadctrl.downvote)
 
 router.put('/:id/reply/:repid/downvote', auth.userInfo, responsectrl.downvote)
 
-router.delete('/:id', auth.userInfo, threadctrl.remove)
+router.delete('/:id', threadctrl.remove)
 
-router.delete('/:id/reply/:repid', auth.userInfo, responsectrl.remove)
+router.delete('/:id/reply/:repid', responsectrl.remove)
 
 module.exports = router;

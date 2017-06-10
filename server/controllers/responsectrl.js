@@ -1,8 +1,8 @@
 var Response = require('../models/response');
+var Thread = require('../models/thread');
 
 var create = function(req, res) {
   let newResponse = new Response({
-    title: req.body.title,
     responseContent: req.body.responseContent,
     creator: req.body.user,
     parent: req.params.id,
@@ -12,7 +12,12 @@ var create = function(req, res) {
     if(err) {
       res.send(err)
     } else {
-      res.send(createdResponse)
+      Thread.findById(req.params.id, (err, thread) => {
+        thread.replies.push(createdResponse)
+        thread.save((err, updatedThread) => {
+          res.send(err ? err : updatedThread)
+        })
+      })
     }
   })
 }
