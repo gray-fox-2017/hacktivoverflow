@@ -272,10 +272,10 @@ describe('Get all storys ideas in GET /ideas/:id',function(){
   // it('should return error')
 })
 
-describe('Get all ideas in GET /ideas',function(){
+describe('Get all ideas in GET /ideas/list',function(){
   it('should return all ideas',function(done){
     chai.request(server)
-    .get('/ideas')
+    .get('/ideas/list')
     .end((err,res)=>{
       res.should.have.status(200)
       res.body.should.be.a('object')

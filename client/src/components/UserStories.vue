@@ -2,7 +2,7 @@
   <div>
     <div class = 'head container'>
       <div class="row">
-      <h1>{{getuser.name}}'s Stories</h1>
+      <h1>{{user.name}}'s Stories</h1>
       <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#story-modal">CREATE STORY</button>
       <br>
       <div class="read" v-if="isRead === true">
@@ -39,6 +39,7 @@
       </div>
     </div>
     <div class="stories col-md-4" v-for="(story,index) in mystories">
+      <h1>{{story.upvote.length - story.downvote.length}}</h1>
         <figure class="snip1174 navy col-md-4">
           <img class ="back" src="https://thumbs.dreamstime.com/t/pen-notepad-dark-background-d-render-mockup-identity-element-set-black-elements-black-backgnound-79699680.jpg" alt="planet" />
           <figcaption class ="content">
@@ -48,7 +49,33 @@
             <a class="btn btn-danger" v-on:click="confirmDel(story._id,index)"><span class="glyphicon glyphicon-trash"></span>Delete</a>
             <a class="btn btn-primary"><span class="glyphicon glyphicon-share"></span>Edit</a>
             <a class="btn btn-success" v-on:click="readStory(story._id)"><span class="glyphicon glyphicon-book"></span>Read Story</a>
+            <a class="com btn btn-primary" v-on:click="listComment(story._id,index)">Comments</a>
           </figcaption>
+          <div class="comment-section" v-if="isComment === true && currentComment === story._id">
+            <button type="button" class="cla btn btn-danger" v-on:click="closeComment()">X</button>
+               <div class="comments-list" v-for="(idea,index) in ideas" >
+                 <hr class="line">
+                 <h4>{{idea.upvote.length - idea.downvote.length}}</h4>
+                 <h4><b>{{idea.creator}}</b></h4>
+                 <p>{{idea.idea}}</p>
+                 <p class="creator">{{idea.createdAt}}</p>
+                 <a class=" btn btn-warning" v-if="idea.upvote.indexOf(user._id) === -1" v-on:click="likeIdea(idea._id,index,user._id)"><span class="glyphicon glyphicon-thumbs-up"></span></a>
+                 <a class=" btn btn-success" v-if="idea.upvote.indexOf(user._id) !== -1"><span class="glyphicon glyphicon-thumbs-up"></span>Liked</a>
+                 <a class=" btn btn-warning" v-if="idea.downvote.indexOf(user._id) === -1" v-on:click="dislikeIdea(idea._id,index,user._id)"><span class="glyphicon glyphicon-thumbs-down"></span></a>
+                 <a class=" btn btn-danger" v-if="idea.downvote.indexOf(user._id) !== -1"><span class="glyphicon glyphicon-thumbs-down"></span>Disliked</a>
+                 <a v-if="idea.user_id === user._id" v-on:click="confirmDelCom(idea._id,index)" class="btn btn-sm btn-danger"><span class="glyphicon glyphicon-trash"></span></a>
+                 <a v-if="idea.user_id === user._id" class="btn btn-sm btn-info" v-on:click="onEditComment(idea._id,index)"><span class="glyphicon glyphicon-pencil"></span></a>
+                 <form v-if="currentCommentIndex === idea._id">
+                   <textarea class="editcomment" rows="7" v-model="editIdea" placeholder="edit comment"></textarea>
+                   <br>
+                   <button type="button" class="cl btn btn-danger" v-on:click="closeEditComment()">X</button>
+                   <button type="button" class="btn btn-sm btn-primary" v-on:click="editComment(idea._id,index)">Edit</button>
+                 </form>
+               </div>
+               <br>
+            <textarea class="addComment" type="text" v-model="idea" rows="7" cols="40"placeholder="Add Comment"></textarea><br>
+            <button type="button" class="btn btn-sm btn-primary" v-on:click="createComment(story._id)">Comment</button>  
+          </div> 
         </figure>
         </div>    
   </div>  
@@ -63,7 +90,13 @@ export default {
       story:"",
       premise:"",
       note:"",
-      isRead: false
+      isRead: false,
+      isComment: false,
+      ideas: [],
+      idea:"",
+      currentComment:"",
+      currentCommentIndex:"",
+      editIdea:""
     }
   },
   methods:{
@@ -142,8 +175,6 @@ export default {
         self.isRead = true
         self.title = response.data.title
         self.story = response.data.story
-        console.log(self.story);
-        console.log(response.data.story);
       })
       .catch(err=>{
         console.log(err);
@@ -153,14 +184,165 @@ export default {
       this.isRead = false
       this.title = ""
       this.story = ""
+    },
+    listComment(id){
+      let self = this;
+      axios.get(`http://localhost:3000/ideas/${id}`)
+      .then(response=>{
+        self.ideas = response.data
+        self.isComment = true
+        self.currentComment = id
+      })
+      .catch(err=>{
+        console.log(err);
+      })
+    },
+    createComment(story_id){
+      let self = this;
+      let user = JSON.parse(localStorage.getItem('token'))
+      axios.post(`http://localhost:3000/ideas`,{
+        idea: self.idea,
+        user_id: user._id,
+        story_id: story_id,
+        creator: user.name,
+        createdAt: new Date().toUTCString()
+      })
+      .then(response=>{
+        self.ideas.push(response.data)
+        self.idea = ""
+      })
+      .catch(err=>{
+        console.log(err);
+      })
+    },
+    deleteComment(id,index){
+      let self = this;
+      axios.delete(`http://localhost:3000/ideas/${id}`)
+      .then(response=>{
+        self.ideas.splice(index,1)
+      })
+      .catch(err=>{
+        console.log(err);
+      })
+    },
+    confirmDelCom(id,index){
+      if(confirm(`Are You Sure You Want to Delete This Comment?`)){
+        this.deleteComment(id,index)
+      }
+      else{
+        return false
+      }
+    },
+    closeComment(){
+      this.isComment = false
+      this.idea = ""
+    },
+    editComment(id,index){
+      let self = this;
+      axios.put(`http://localhost:3000/ideas/${id}`,{
+        idea: self.editIdea,
+        createdAt: new Date().toUTCString()
+      })
+      .then(response=>{
+        self.ideas[index].idea = self.editIdea
+        self.ideas[index].createdAt = new Date().toUTCString()
+        self.currentCommentIndex = ""
+      })
+      .catch(err=>{
+        console.log(err);
+      })
+    },
+    onEditComment(id,index){
+      this.editIdea = this.ideas[index].idea
+      this.currentCommentIndex = id
+    },
+    closeEditComment(){
+      this.currentCommentIndex = ""
+    },
+    likeIdea(id,index,user_id){
+      let self = this;
+      axios.get(`http://localhost:3000/ideas/one/${id}`)
+      .then(response=>{
+        let like = response.data.upvote || []
+        let i = response.data.downvote.indexOf(user_id)
+        let dislike = response.data.downvote || []
+        like.push(user_id)
+        if(i !== -1){
+          dislike.splice(i,1)
+          axios.put(`http://localhost:3000/ideas/${id}`,{
+            downvote: dislike
+          })
+          .then(response=>{
+            self.ideas[index].downvote = dislike
+          })
+          .catch(err=>{
+            console.log(err);
+          })
+        }
+        else{
+          axios.put(`http://localhost:3000/ideas/${id}`,{
+            upvote: like
+          })
+          .then(response=>{
+            console.log(like);
+            self.ideas[index].upvote = like
+          })
+          .catch(err=>{
+            console.log(err);
+          })
+        }
+      })
+    },
+    dislikeIdea(id,index,user_id){
+      let self = this;
+      axios.get(`http://localhost:3000/ideas/one/${id}`)
+      .then(response=>{
+        let dislike = response.data.downvote || []
+        let i = response.data.upvote.indexOf(user_id)
+        let like = response.data.upvote || []
+        dislike.push(user_id) 
+        if(i !== -1){
+          like.splice(i,1)
+          axios.put(`http://localhost:3000/ideas/${id}`,{
+            upvote: like
+          })
+          .then(response=>{
+            console.log(like);
+            self.ideas[index].upvote = like
+          })
+          .catch(err=>{
+            console.log(err);
+          })
+        }
+        else{
+          axios.put(`http://localhost:3000/ideas/${id}`,{
+            downvote: dislike
+          })
+          .then(response=>{
+            self.ideas[index].downvote = dislike
+            console.log(like);
+            console.log(self.ideas[index].upvote);
+          })
+          .catch(err=>{
+            console.log(err);
+          })
+        }
+      })
     }
   },
   created:function(){
     this.userStories()
   },
   computed:{
-    getuser(){
-      return JSON.parse(localStorage.getItem('token'))
+    user(){
+      let user = JSON.parse(localStorage.getItem('token'))
+      if(user){
+        return user
+      }
+      else{
+        alert(`You Must Login First`)
+        window.location="/"
+      }
     }
   }
 }
@@ -172,6 +354,13 @@ export default {
   margin-bottom: 50px;
 }
 
+.addComment{
+  color:black;
+}
+.cla{
+  margin-top: 30px;
+}
+
 .cancel{
   position: fixed;
   margin-top: -200px;
@@ -180,6 +369,16 @@ export default {
 
 .stories{
   margin-bottom: 40px;
+}
+
+.com{
+  margin-top:10px;
+  float: left;
+}
+
+.editcomment{
+  color:black;
+  margin-top:10px;
 }
 
 .read{

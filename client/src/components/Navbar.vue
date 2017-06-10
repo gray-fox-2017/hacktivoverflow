@@ -11,46 +11,25 @@
       <span class="icon-bar"></span>
       <span class="icon-bar"></span>
     </button>
-    <a class="navbar-brand" href="#">Storyoverflow</a>
+    <a class="navbar-brand"><router-link to="/stories">Storyoverflow</router-link></a>
   </div>
 
   <!-- Collect the nav links, forms, and other content for toggling -->
   <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
     <ul class="nav navbar-nav">
-      <li><router-link to="/stories">Home</router-link></li>
-       <!-- class="active" -->
-      <li class="dropdown" v-if="isLogin === true">
-        <a href="#" class="dropdown-toggle"  data-toggle="dropdown">Profile<span class="caret"></span></a>
-        <ul class="dropdown-menu" role="menu" >
-          <li><router-link to="/user-stories">{{user.name}}'s Story</router-link></li>
-          <li class="divider"></li>
-          <li><router-link to="/profile">{{user.name}}'s Profile</router-link></li>
-          <!-- <li class="divider"></li>
-          <li><a href="#">One more separated link</a></li> -->
-        </ul>
-      </li>
+      <li v-if="isLogin == true"><router-link to="/stories">List Stories</router-link></li>
+      <li v-if="isLogin === true"><router-link to="/user-stories">{{user.name}}'s Story</router-link></li>
     </ul>
-    <form class="navbar-form navbar-left" role="search">
-      <div class="form-group">
-        <input type="text" class="form-control" placeholder="Search">
-      </div>
-      <button type="submit" class="btn btn-default">Submit</button>
-    </form>
     <ul class="nav navbar-nav navbar-right">
       <!-- <li><p class="navbar-text">Already have an account?</p></li> -->
-      <a href="#" v-if="isLogin === true" v-on:click="logout()"><b>Logout</b></a>
-      <li class="dropdown">    
-        <a href="#" v-if="isLogin === false" class="dropdown-toggle" data-toggle="dropdown"><b>Login</b> <span class="caret"></span></a>
+      <button type="button" class="logout" v-if="isLogin === true" v-on:click="logout()"><b>Logout</b></button>
+      <li class="dropdown" v-if="isLogin === false">    
+        <a class="dropdown-toggle" data-toggle="dropdown"><b>Login</b> <span class="caret"></span></a>
     <ul id="login-dp" class="dropdown-menu">
       <li>
          <div class="row">
             <div class="col-md-12">
-              Login via
-              <div class="social-buttons">
-                <a href="#" class="btn btn-fb"><i class="fa fa-facebook"></i> Facebook</a>
-                <a href="#" class="btn btn-tw"><i class="fa fa-twitter"></i> Twitter</a>
-              </div>
-                              or
+              Login
                <form id="login-nav">
                    <div class="form-group">
                       <label class="sr-only" for="exampleInputEmail2">Username</label>
@@ -157,7 +136,8 @@ export default {
         console.log(typeof(response.data));
         alert(`Welcome to Storyoverflow ${self.username}`)
         localStorage.setItem('token',JSON.stringify(response.data))
-         this.$router.push('/user-stories')
+        this.$router.push('/user-stories')
+        location.reload()
       })
       .catch(err=>{
         console.log(err);
@@ -182,6 +162,9 @@ export default {
 body{
     background:url('http://www.wallpaperup.com/uploads/wallpapers/2012/10/21/20181/cad2441dd3252cf53f12154412286ba0.jpg');
     padding:50px;
+}
+.logout{
+  margin-top:12px;
 }
 
 #login-dp{

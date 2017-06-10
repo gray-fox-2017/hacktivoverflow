@@ -32,28 +32,35 @@
                 <br>
                 <div><button type="button" class="btn btn-primary" v-on:click="listComment(story._id,index)">Comments</button></div>
             </div>
-            <a class=" vote btn btn-default" v-if="story.upvote.indexOf(user._id)" v-on:click="like(story._id,index,user._id)"><span class="glyphicon glyphicon-thumbs-up"></span></a>
-            <a class=" vote btn btn-default" v-if="story.downvote.indexOf(user._id)" v-on:click="dislike(story._id,index,user._id)"><span class="glyphicon glyphicon-thumbs-down"></span></a>
+            <a class=" vote btn btn-default" v-if="story.upvote.indexOf(user._id) === -1" v-on:click="like(story._id,index,user._id)"><span class="glyphicon glyphicon-thumbs-up"></span></a>
+            <a class=" vote btn btn-success" v-if="story.upvote.indexOf(user._id) !== -1"><span class="glyphicon glyphicon-thumbs-up"></span>Liked</a>
+            <a class=" vote btn btn-default" v-if="story.downvote.indexOf(user._id) === -1" v-on:click="dislike(story._id,index,user._id)"><span class="glyphicon glyphicon-thumbs-down"></span></a>
+            <a class=" vote btn btn-danger" v-if="story.downvote.indexOf(user._id) !== -1"><span class="glyphicon glyphicon-thumbs-down"></span>Disliked</a>
             <!-- <a class=" vote btn btn-success" v-else><span class="glyphicon glyphicon-ok"></span>Voted</a> -->                              
             <div class="comment-section" v-if="isComment === true && currentComment === story._id">
-              <button type="button" class="cl btn btn-danger" v-on:click="closeComment()">X</button>
+              <button type="button" class="cla btn btn-danger" v-on:click="closeComment()">X</button>
                  <div class="comments-list" v-for="(idea,index) in ideas" >
-                   <hr>
+                   <hr class="line">
+                   <h4>{{idea.upvote.length - idea.downvote.length}}</h4>
                    <h4><b>{{idea.creator}}</b></h4>
                    <p>{{idea.idea}}</p>
                    <p class="creator">{{idea.createdAt}}</p>
+                   <a class=" btn btn-default" v-if="idea.upvote.indexOf(user._id) === -1" v-on:click="likeIdea(idea._id,index,user._id)"><span class="glyphicon glyphicon-thumbs-up"></span></a>
+                   <a class=" btn btn-success" v-if="idea.upvote.indexOf(user._id) !== -1"><span class="glyphicon glyphicon-thumbs-up"></span>Liked</a>
+                   <a class=" btn btn-default" v-if="idea.downvote.indexOf(user._id) === -1" v-on:click="dislikeIdea(idea._id,index,user._id)"><span class="glyphicon glyphicon-thumbs-down"></span></a>
+                   <a class=" btn btn-danger" v-if="idea.downvote.indexOf(user._id) !== -1"><span class="glyphicon glyphicon-thumbs-down"></span>Disliked</a>
                    <a v-if="idea.user_id === user._id" v-on:click="confirmDelCom(idea._id,index)" class="btn btn-sm btn-danger"><span class="glyphicon glyphicon-trash"></span></a>
                    <a v-if="idea.user_id === user._id" class="btn btn-sm btn-info" v-on:click="onEditComment(idea._id,index)"><span class="glyphicon glyphicon-pencil"></span></a>
                    <form v-if="currentCommentIndex === idea._id">
-                     <textarea class="editcomment" rows="7" v-model="editIdea"></textarea>
+                     <textarea class="editcomment" rows="7" v-model="editIdea" placeholder="edit comment"></textarea>
                      <br>
                      <button type="button" class="cl btn btn-danger" v-on:click="closeEditComment()">X</button>
-                     <button type="button" class="btn btn-sm btn-primary" v-on:click="editComment(idea._id,index)">Submit</button>
+                     <button type="button" class="btn btn-sm btn-primary" v-on:click="editComment(idea._id,index)">Edit</button>
                    </form>
                  </div>
                  <br>
-              <textarea type="text" v-model="idea" rows="7" placeholder="Add Comment"></textarea>
-              <button type="button" class="btn btn-sm btn-primary" v-on:click="createComment(story._id)">Comment</button>  
+              <textarea type="text" v-model="idea" rows="7" placeholder="Add Comment"></textarea><br>
+              <button type="button" class="addComment btn btn-sm btn-primary" v-on:click="createComment(story._id)">Comment</button>  
             </div>  
             </div>
           </div>
@@ -247,6 +254,76 @@ export default {
     },
     closeEditComment(){
       this.currentCommentIndex = ""
+    },
+    likeIdea(id,index,user_id){
+      let self = this;
+      axios.get(`http://localhost:3000/ideas/one/${id}`)
+      .then(response=>{
+        let like = response.data.upvote || []
+        let i = response.data.downvote.indexOf(user_id)
+        let dislike = response.data.downvote || []
+        like.push(user_id)
+        if(i !== -1){
+          dislike.splice(i,1)
+          axios.put(`http://localhost:3000/ideas/${id}`,{
+            downvote: dislike
+          })
+          .then(response=>{
+            self.ideas[index].downvote = dislike
+          })
+          .catch(err=>{
+            console.log(err);
+          })
+        }
+        else{
+          axios.put(`http://localhost:3000/ideas/${id}`,{
+            upvote: like
+          })
+          .then(response=>{
+            console.log(like);
+            self.ideas[index].upvote = like
+          })
+          .catch(err=>{
+            console.log(err);
+          })
+        }
+      })
+    },
+    dislikeIdea(id,index,user_id){
+      let self = this;
+      axios.get(`http://localhost:3000/ideas/one/${id}`)
+      .then(response=>{
+        let dislike = response.data.downvote || []
+        let i = response.data.upvote.indexOf(user_id)
+        let like = response.data.upvote || []
+        dislike.push(user_id) 
+        if(i !== -1){
+          like.splice(i,1)
+          axios.put(`http://localhost:3000/ideas/${id}`,{
+            upvote: like
+          })
+          .then(response=>{
+            console.log(like);
+            self.ideas[index].upvote = like
+          })
+          .catch(err=>{
+            console.log(err);
+          })
+        }
+        else{
+          axios.put(`http://localhost:3000/ideas/${id}`,{
+            downvote: dislike
+          })
+          .then(response=>{
+            self.ideas[index].downvote = dislike
+            console.log(like);
+            console.log(self.ideas[index].upvote);
+          })
+          .catch(err=>{
+            console.log(err);
+          })
+        }
+      })
     }
   },
   created: function() {
@@ -287,20 +364,26 @@ body {
 background-color: #C0E5D9;
 }
 
+.addComment{
+  margin-bottom:20px;
+}
 .creator{
   color:gray;
 }
 
 .editcomment{
   color:black;
+  margin-top:10px;
 }
-/*.cl{
-  position: fixed;
-  margin-top:500px;
-}*/
-
+.cla{
+margin: auto;
+margin-bottom: 20px;
+}
+.line{
+  margin-top:30px
+}
 .vote{
-  margin-bottom: 20px;
+  margin-bottom: 30px;
 }
 .cancel{
   position: fixed;

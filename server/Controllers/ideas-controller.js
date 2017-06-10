@@ -25,7 +25,7 @@ function editIdea (req,res,next){
       _id: req.params.id
     },{
       idea: req.body.idea || result.idea,
-      upvote: req.body.upvote || result.vote,
+      upvote: req.body.upvote || result.upvote,
       downvote: req.body.downvote || result.downvote,
       createdAt: req.body.createdAt || result.createdAt
     },function(err,result){
