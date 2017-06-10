@@ -47,7 +47,7 @@
             <p class="premise">{{story.premise}}</p>
             <p class="note">{{story.note}}</p>
             <a class="btn btn-danger" v-on:click="confirmDel(story._id,index)"><span class="glyphicon glyphicon-trash"></span>Delete</a>
-            <a class="btn btn-primary"><span class="glyphicon glyphicon-share"></span>Edit</a>
+            <a class="btn btn-primary" v-on:click="onEditStory(story._id,index)"><span class="glyphicon glyphicon-share"></span>Edit</a>
             <a class="btn btn-success" v-on:click="readStory(story._id)"><span class="glyphicon glyphicon-book"></span>Read Story</a>
             <a class="com btn btn-primary" v-on:click="listComment(story._id,index)">Comments</a>
             <a class="com btn btn-warning" v-if="story.upvote.indexOf(user._id) === -1" v-on:click="like(story._id,index,user._id)"><span class="glyphicon glyphicon-thumbs-up"></span></a>
@@ -55,6 +55,20 @@
             <a class="com btn btn-warning" v-if="story.downvote.indexOf(user._id) === -1" v-on:click="dislike(story._id,index,user._id)"><span class="glyphicon glyphicon-thumbs-down"></span></a>
             <a class="com btn btn-danger" v-if="story.downvote.indexOf(user._id) !== -1"><span class="glyphicon glyphicon-thumbs-down"></span>Disliked</a>
           </figcaption>
+          <div class="editStory" v-if="isEditStory === true">
+            <form>
+              <button type="button" class="cla btn btn-danger" v-on:click="closeStory()">X</button><br>
+              <h2>Title</h2><br>
+              <input type="text" v-model="title"><br>
+              <h2>Premise</h2><br>
+              <input type="text" v-model="premise"><br>
+              <h2>Note</h2><br>
+              <input type="text" v-model="note"><br>
+              <h2>Story</h2><br>
+              <textarea v-model="currentstory" rows="8" cols="40"></textarea>
+              <button type="button" class="btn btn-primary" v-on:click="editStory(story._id,index)">Submit</button>
+            </form>
+          </div>
           <div class="comment-section" v-if="isComment === true && currentComment === story._id">
             <button type="button" class="cla btn btn-danger" v-on:click="closeComment()">X</button>
                <div class="comments-list" v-for="(idea,index) in ideas" >
@@ -95,12 +109,15 @@ export default {
       premise: "",
       note: "",
       isRead: false,
-      isComment: false,
       ideas: [],
       idea: "",
+      isComment: false,
       currentComment: "",
       currentCommentIndex: "",
-      editIdea: ""
+      editIdea: "",
+      isEditStory: false,
+      currentStoryIndex:"",
+      currentstory:""
     }
   },
   methods: {
@@ -151,12 +168,28 @@ export default {
         return false
       }
     },
-    editStory(id, index) {
+    onEditStory(id,index){
       let self = this;
-      axios.put(`http://localhost:3000/${id}`, {
+      axios.get(`http://localhost:3000/one/${id}`)
+      .then(response=>{
+        console.log(`masuk edit`);
+        self.title = response.data.title
+        self.premise = response.data.premise
+        self.currentstory = response.data.story
+        self.note = response.data.premise
+        self.currentStoryIndex = id
+        self.isEditStory = true
+      })
+      .catch(err=>{
+        console.log(err);
+      })
+    },
+    editStory(id,index) {
+      let self = this;
+      axios.put(`http://localhost:3000/edit/${id}`, {
           title: self.title,
           premise: self.premise,
-          story: self.story,
+          story: self.currentstory,
           note: self.note,
           createdAt: new Date().toUTCString()
         })
@@ -164,11 +197,17 @@ export default {
           axios.get(`http://localhost:3000/one/${id}`)
             .then(res => {
               self.mystories[index] = res.data
+              self.currentStoryIndex = ""
+              self.isEditStory = false
             })
             .catch(err => {
               console.log(err);
             })
         })
+    },
+    closeStory() {
+      this.currentStoryIndex = ""
+      this.isEditStory = false;
     },
     readStory(id) {
       console.log(`masuk read`);
@@ -417,6 +456,13 @@ export default {
   margin-bottom: 50px;
 }
 
+.cla{
+  margin-bottom:20px;
+}
+.editStory{
+  color:black;
+  margin-bottom: 30px;
+}
 /*.content{
   height:500px;
 }*/
