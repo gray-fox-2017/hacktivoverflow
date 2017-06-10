@@ -1,14 +1,20 @@
 const Stories = require('../Models/story.js')
+const Users = require ('../Models/user.js')
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
 
 function createStory (req,res,next){
-  let user = jwt.verify(req.body.user_id,process.env.PANDA)
+  // let user = jwt.verify(req.body.user_id,process.env.PANDA)
   Stories.create({
     title: req.body.title,
+    premise: req.body.premise,
     story: req.body.story,
-    vote: [],
-    user_id: user._id
+    creator: req.body.creator,
+    note: req.body.note,
+    createdAt: new Date().toUTCString(),
+    upvote: [],
+    downvote: [],
+    user_id: req.body.user_id
   },function(err,result){
     res.send(result)
   })
@@ -23,7 +29,8 @@ function editStory (req,res,next){
     },{
       title: req.body.title || result.title,
       story: req.body.story || result.story,
-      vote: req.body.vote || result.vote
+      upvote: req.body.upvote || result.upvote,
+      downvote: req.body.downvote || result.downvote
     },function(err,result){
       res.send(`${req.body.title} Updated!`)
     })
@@ -59,6 +66,7 @@ function getOneStory (req,res,next){
     res.send(result)
   })
 }
+
 
 module.exports = {
   getOneStory,userStories,listStories,deleteStory,editStory,createStory

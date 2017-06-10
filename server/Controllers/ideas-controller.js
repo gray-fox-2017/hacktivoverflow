@@ -3,11 +3,11 @@ const jwt = require('jsonwebtoken')
 require('dotenv').config()
 
 function createIdea (req,res,next){
-  let user = jwt.verify(req.body.user_id,process.env.PANDA)
+  // let user = jwt.verify(req.body.user_id,process.env.PANDA)
   Ideas.create({
     idea: req.body.idea,
     vote: [],
-    user_id: user._id,
+    user_id: req.body.user_id,
     story_id: req.body.story_id
   },function(err,result){
     res.send(result)

@@ -46,7 +46,7 @@ describe('Get all user stories in GET /:id',function(){
 describe('Get all stories in GET /',function(){
   it('should return all stories',function(done){
     chai.request(server)
-    .get('/stories')
+    .get('/story/list')
     .end((err,res)=>{
       res.should.have.status(200)
       res.body.should.be.a('array')
@@ -94,7 +94,7 @@ describe('Delete story in DELETE /:id',function(){
 describe('Edit story in PUT /:id',function(){
   it('should update one story',function(done){
     chai.request(server)
-    .put(`/${id}`)
+    .put(`/edit/${id}`)
     .send({
       title: 'asli',
       story: 'uda pass woi',
@@ -111,7 +111,7 @@ describe('Edit story in PUT /:id',function(){
 describe('Get one story in GET /:id',function(){
   it('should get one story',function(done){
     chai.request(server)
-    .get(`/${id}`)
+    .get(`/one/${id}`)
     .end((err,res)=>{
       res.should.have.status(200)
       res.body.should.be.a('object')
@@ -144,10 +144,10 @@ describe('Users',function(){
   describe(`list all users in database in GET /users`,function(){
     it('should return all users', function(done){
       chai.request(server)
-      .get('/users')
+      .get('/users/list')
       .end((err,res)=>{
         res.should.have.status(200)
-        res.body.should.be.a('object')
+        res.body.should.be.a('array')
         done()
       })
     })
@@ -320,7 +320,7 @@ describe('Delete idea in DELETE /:id',function(){
     })
   })
   
-describe('Edit idea in PUT /:id',function(){
+describe('Edit idea in PUT /ideas/:id',function(){
   it('should update one idea',function(done){
     chai.request(server)
     .put(`/ideas/${idea_id}`)
@@ -352,7 +352,7 @@ describe('Get one idea in GET /ideas/:id',function(){
     })
   })
   
-describe('Get all user ideas in GET /user/:id',function(){
+describe('Get all user ideas in GET /ideas/user/:id',function(){
   it('should get all user ideas',function(done){
     chai.request(server)
     .get(`/ideas/user/${idea_id}`)

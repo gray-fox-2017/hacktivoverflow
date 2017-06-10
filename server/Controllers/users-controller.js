@@ -17,32 +17,55 @@ function signup (req,res,next){
   })
 }
 
+// function login (req,res,next){
+//   Users.findOne({
+//     username: req.body.username
+//   },function(err,result){
+//     if(!result){
+//       res.send('Invalid Username!')
+//     }
+//     else{
+//       if(bcrypt.compare(req.body.password,result.password)){
+//         let token = {
+//           _id: result._id,
+//           name: result._id
+//         }
+//         // let token = jwt.sign({_id:result._id,name:result._id,username:result._id},process.env.PANDA)
+//         res.send(token)
+//       }
+//       else{
+//         res.send('Invalid Password')
+//       }
+//     }
+//   })
+// }
 function login (req,res,next){
   Users.findOne({
     username: req.body.username
   },function(err,result){
     if(!result){
-      res.send('Invalid Username!')
+      res.send('invalid username!')
     }
     else{
       if(bcrypt.compare(req.body.password,result.password)){
         // let token = {
-        //   _id: result._id,
-        //   name: result._id
+        //   _id:result._id,
+        //   name: result.name
         // }
-        let token = jwt.sign({_id:result._id,name:result._id,username:result._id},process.env.PANDA)
+        let data = jwt.sign({_id:result._id,name:result.name},process.env.PANDA)
+        let token = jwt.verify(data,process.env.PANDA)
         res.send(token)
       }
       else{
-        res.send('Invalid Password')
+        res.send('invalid password!')
       }
     }
   })
 }
 
 function listUsers (req,res,next){
-  Users.find(function(err,result){
-    console.log(result);
+  Users.find({},function(err,result){
+          console.log(result);
     res.send(result)
   })
 }

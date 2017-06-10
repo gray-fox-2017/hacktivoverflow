@@ -3,7 +3,8 @@ const Schema = mongoose.Schema
 
 var ideaSchema = new Schema ({
   idea: String,
-  vote: [{type: Schema.Types.ObjectId, ref: 'User'}],
+  upvote: [{type: Schema.Types.ObjectId, ref: 'User'}],
+  downvote: [{type: Schema.Types.ObjectId, ref: 'User'}],
   user_id:{type: Schema.Types.ObjectId,ref: 'User'},
   story_id:{type: Schema.Types.ObjectId,ref: 'User'}
 })
