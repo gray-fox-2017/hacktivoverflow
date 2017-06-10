@@ -39,7 +39,7 @@
       </div>
     </div>
     <div class="stories col-md-4" v-for="(story,index) in mystories">
-      <h1>{{story.upvote.length - story.downvote.length}}</h1>
+        <h1>{{story.upvote.length - story.downvote.length}}</h1>
         <figure class="snip1174 navy col-md-4">
           <img class ="back" src="https://thumbs.dreamstime.com/t/pen-notepad-dark-background-d-render-mockup-identity-element-set-black-elements-black-backgnound-79699680.jpg" alt="planet" />
           <figcaption class ="content">
@@ -50,15 +50,19 @@
             <a class="btn btn-primary"><span class="glyphicon glyphicon-share"></span>Edit</a>
             <a class="btn btn-success" v-on:click="readStory(story._id)"><span class="glyphicon glyphicon-book"></span>Read Story</a>
             <a class="com btn btn-primary" v-on:click="listComment(story._id,index)">Comments</a>
+            <a class="com btn btn-warning" v-if="story.upvote.indexOf(user._id) === -1" v-on:click="like(story._id,index,user._id)"><span class="glyphicon glyphicon-thumbs-up"></span></a>
+            <a class="com btn btn-success" v-if="story.upvote.indexOf(user._id) !== -1"><span class="glyphicon glyphicon-thumbs-up"></span>Liked</a>
+            <a class="com btn btn-warning" v-if="story.downvote.indexOf(user._id) === -1" v-on:click="dislike(story._id,index,user._id)"><span class="glyphicon glyphicon-thumbs-down"></span></a>
+            <a class="com btn btn-danger" v-if="story.downvote.indexOf(user._id) !== -1"><span class="glyphicon glyphicon-thumbs-down"></span>Disliked</a>
           </figcaption>
           <div class="comment-section" v-if="isComment === true && currentComment === story._id">
             <button type="button" class="cla btn btn-danger" v-on:click="closeComment()">X</button>
                <div class="comments-list" v-for="(idea,index) in ideas" >
                  <hr class="line">
-                 <h4>{{idea.upvote.length - idea.downvote.length}}</h4>
                  <h4><b>{{idea.creator}}</b></h4>
                  <p>{{idea.idea}}</p>
                  <p class="creator">{{idea.createdAt}}</p>
+                <h4>{{idea.upvote.length - idea.downvote.length}}</h4>
                  <a class=" btn btn-warning" v-if="idea.upvote.indexOf(user._id) === -1" v-on:click="likeIdea(idea._id,index,user._id)"><span class="glyphicon glyphicon-thumbs-up"></span></a>
                  <a class=" btn btn-success" v-if="idea.upvote.indexOf(user._id) !== -1"><span class="glyphicon glyphicon-thumbs-up"></span>Liked</a>
                  <a class=" btn btn-warning" v-if="idea.downvote.indexOf(user._id) === -1" v-on:click="dislikeIdea(idea._id,index,user._id)"><span class="glyphicon glyphicon-thumbs-down"></span></a>
@@ -83,265 +87,324 @@
 
 <script>
 export default {
-  data(){
-    return{
-      mystories:[],
-      title:"",
-      story:"",
-      premise:"",
-      note:"",
+  data() {
+    return {
+      mystories: [],
+      title: "",
+      story: "",
+      premise: "",
+      note: "",
       isRead: false,
       isComment: false,
       ideas: [],
-      idea:"",
-      currentComment:"",
-      currentCommentIndex:"",
-      editIdea:""
+      idea: "",
+      currentComment: "",
+      currentCommentIndex: "",
+      editIdea: ""
     }
   },
-  methods:{
-    userStories(){
+  methods: {
+    userStories() {
       let self = this;
       let user = JSON.parse(localStorage.getItem('token'))
       axios.get(`http://localhost:3000/${user._id}`)
-      .then(response=>{
-        self.mystories = response.data
-      })
-      .catch(err=>{
-        console.log(err);
-      })
+        .then(response => {
+          self.mystories = response.data
+        })
+        .catch(err => {
+          console.log(err);
+        })
     },
-    createStory(){
+    createStory() {
       let self = this
       let user = JSON.parse(localStorage.getItem('token'))
-      axios.post(`http://localhost:3000/create`,{
-        title: self.title,
-        premise: self.premise,
-        story: self.story,
-        note: self.note,
-        createdAt: new Date().toUTCString(),
-        creator: user.name,
-        user_id: user._id
-      })
-      .then(response=>{
-        self.mystories.push(response.data)
-      })
-      .catch(err=>{
-        console.log(err);
-      })
+      axios.post(`http://localhost:3000/create`, {
+          title: self.title,
+          premise: self.premise,
+          story: self.story,
+          note: self.note,
+          createdAt: new Date().toUTCString(),
+          creator: user.name,
+          user_id: user._id
+        })
+        .then(response => {
+          self.mystories.push(response.data)
+        })
+        .catch(err => {
+          console.log(err);
+        })
     },
-    deleteStory(id,index){
+    deleteStory(id, index) {
       let self = this
       axios.delete(`http://localhost:3000/${id}`)
-      .then(response=>{
-        self.mystories.splice(index,1)
-      })
-      .catch(err=>{
-        console.log(err);
-      })
+        .then(response => {
+          self.mystories.splice(index, 1)
+        })
+        .catch(err => {
+          console.log(err);
+        })
     },
-    confirmDel(id,index){
-      if(confirm(`Are You Sure You Want To Delete This Story?`)){
-        this.deleteStory(id,index)
-      }
-      else{
+    confirmDel(id, index) {
+      if (confirm(`Are You Sure You Want To Delete This Story?`)) {
+        this.deleteStory(id, index)
+      } else {
         return false
       }
     },
-    editStory(id,index){
+    editStory(id, index) {
       let self = this;
-      axios.put(`http://localhost:3000/${id}`,{
-        title: self.title,
-        premise: self.premise,
-        story: self.story,
-        note: self.note,
-        createdAt: new Date().toUTCString()
-      })
-      .then(response=>{
-        axios.get(`http://localhost:3000/one/${id}`)
-        .then(res=>{
-          self.mystories[index] = res.data
+      axios.put(`http://localhost:3000/${id}`, {
+          title: self.title,
+          premise: self.premise,
+          story: self.story,
+          note: self.note,
+          createdAt: new Date().toUTCString()
         })
-        .catch(err=>{
-          console.log(err);
+        .then(response => {
+          axios.get(`http://localhost:3000/one/${id}`)
+            .then(res => {
+              self.mystories[index] = res.data
+            })
+            .catch(err => {
+              console.log(err);
+            })
         })
-      })
     },
-    readStory(id){
+    readStory(id) {
       console.log(`masuk read`);
       let self = this;
       axios.get(`http://localhost:3000/one/${id}`)
-      .then(response=>{
-        self.isRead = true
-        self.title = response.data.title
-        self.story = response.data.story
-      })
-      .catch(err=>{
-        console.log(err);
-      })
+        .then(response => {
+          self.isRead = true
+          self.title = response.data.title
+          self.story = response.data.story
+        })
+        .catch(err => {
+          console.log(err);
+        })
     },
-    cancelRead(){
+    cancelRead() {
       this.isRead = false
       this.title = ""
       this.story = ""
     },
-    listComment(id){
+    like(id, index, user_id) {
+      let self = this;
+      axios.get(`http://localhost:3000/one/${id}`)
+        .then(response => {
+          let like = response.data.upvote
+          let i = response.data.downvote.indexOf(user_id)
+          let dislike = response.data.downvote
+          like.push(user_id)
+          if (i !== -1) {
+            dislike.splice(i, 1)
+            axios.put(`http://localhost:3000/edit/${id}`, {
+                downvote: dislike
+              })
+              .then(response => {
+                self.mystories[index].downvote = dislike
+              })
+              .catch(err => {
+                console.log(err);
+              })
+          } else {
+            axios.put(`http://localhost:3000/edit/${id}`, {
+                upvote: like
+              })
+              .then(response => {
+                self.mystories[index].upvote = like
+              })
+              .catch(err => {
+                console.log(err);
+              })
+          }
+        })
+    },
+    dislike(id, index, user_id) {
+      let self = this;
+      axios.get(`http://localhost:3000/one/${id}`)
+        .then(response => {
+          let dislike = response.data.downvote
+          let i = response.data.upvote.indexOf(user_id)
+          let like = response.data.upvote
+          dislike.push(user_id)
+          if (i !== -1) {
+            like.splice(i, 1)
+            axios.put(`http://localhost:3000/edit/${id}`, {
+                upvote: like
+              })
+              .then(response => {
+                self.mystories[index].upvote = like
+              })
+              .catch(err => {
+                console.log(err);
+              })
+          } else {
+            axios.put(`http://localhost:3000/edit/${id}`, {
+                downvote: dislike
+              })
+              .then(response => {
+                self.mystories[index].downvote = dislike
+              })
+              .catch(err => {
+                console.log(err);
+              })
+          }
+        })
+    },
+    listComment(id) {
       let self = this;
       axios.get(`http://localhost:3000/ideas/${id}`)
-      .then(response=>{
-        self.ideas = response.data
-        self.isComment = true
-        self.currentComment = id
-      })
-      .catch(err=>{
-        console.log(err);
-      })
+        .then(response => {
+          self.ideas = response.data
+          self.isComment = true
+          self.currentComment = id
+        })
+        .catch(err => {
+          console.log(err);
+        })
     },
-    createComment(story_id){
+    createComment(story_id) {
       let self = this;
       let user = JSON.parse(localStorage.getItem('token'))
-      axios.post(`http://localhost:3000/ideas`,{
-        idea: self.idea,
-        user_id: user._id,
-        story_id: story_id,
-        creator: user.name,
-        createdAt: new Date().toUTCString()
-      })
-      .then(response=>{
-        self.ideas.push(response.data)
-        self.idea = ""
-      })
-      .catch(err=>{
-        console.log(err);
-      })
+      axios.post(`http://localhost:3000/ideas`, {
+          idea: self.idea,
+          user_id: user._id,
+          story_id: story_id,
+          creator: user.name,
+          createdAt: new Date().toUTCString()
+        })
+        .then(response => {
+          self.ideas.push(response.data)
+          self.idea = ""
+        })
+        .catch(err => {
+          console.log(err);
+        })
     },
-    deleteComment(id,index){
+    deleteComment(id, index) {
       let self = this;
       axios.delete(`http://localhost:3000/ideas/${id}`)
-      .then(response=>{
-        self.ideas.splice(index,1)
-      })
-      .catch(err=>{
-        console.log(err);
-      })
+        .then(response => {
+          self.ideas.splice(index, 1)
+        })
+        .catch(err => {
+          console.log(err);
+        })
     },
-    confirmDelCom(id,index){
-      if(confirm(`Are You Sure You Want to Delete This Comment?`)){
-        this.deleteComment(id,index)
-      }
-      else{
+    confirmDelCom(id, index) {
+      if (confirm(`Are You Sure You Want to Delete This Comment?`)) {
+        this.deleteComment(id, index)
+      } else {
         return false
       }
     },
-    closeComment(){
+    closeComment() {
       this.isComment = false
       this.idea = ""
     },
-    editComment(id,index){
+    editComment(id, index) {
       let self = this;
-      axios.put(`http://localhost:3000/ideas/${id}`,{
-        idea: self.editIdea,
-        createdAt: new Date().toUTCString()
-      })
-      .then(response=>{
-        self.ideas[index].idea = self.editIdea
-        self.ideas[index].createdAt = new Date().toUTCString()
-        self.currentCommentIndex = ""
-      })
-      .catch(err=>{
-        console.log(err);
-      })
+      axios.put(`http://localhost:3000/ideas/${id}`, {
+          idea: self.editIdea,
+          createdAt: new Date().toUTCString()
+        })
+        .then(response => {
+          self.ideas[index].idea = self.editIdea
+          self.ideas[index].createdAt = new Date().toUTCString()
+          self.currentCommentIndex = ""
+        })
+        .catch(err => {
+          console.log(err);
+        })
     },
-    onEditComment(id,index){
+    onEditComment(id, index) {
       this.editIdea = this.ideas[index].idea
       this.currentCommentIndex = id
     },
-    closeEditComment(){
+    closeEditComment() {
       this.currentCommentIndex = ""
     },
-    likeIdea(id,index,user_id){
+    likeIdea(id, index, user_id) {
       let self = this;
       axios.get(`http://localhost:3000/ideas/one/${id}`)
-      .then(response=>{
-        let like = response.data.upvote || []
-        let i = response.data.downvote.indexOf(user_id)
-        let dislike = response.data.downvote || []
-        like.push(user_id)
-        if(i !== -1){
-          dislike.splice(i,1)
-          axios.put(`http://localhost:3000/ideas/${id}`,{
-            downvote: dislike
-          })
-          .then(response=>{
-            self.ideas[index].downvote = dislike
-          })
-          .catch(err=>{
-            console.log(err);
-          })
-        }
-        else{
-          axios.put(`http://localhost:3000/ideas/${id}`,{
-            upvote: like
-          })
-          .then(response=>{
-            console.log(like);
-            self.ideas[index].upvote = like
-          })
-          .catch(err=>{
-            console.log(err);
-          })
-        }
-      })
+        .then(response => {
+          let like = response.data.upvote || []
+          let i = response.data.downvote.indexOf(user_id)
+          let dislike = response.data.downvote || []
+          like.push(user_id)
+          if (i !== -1) {
+            dislike.splice(i, 1)
+            axios.put(`http://localhost:3000/ideas/${id}`, {
+                downvote: dislike
+              })
+              .then(response => {
+                self.ideas[index].downvote = dislike
+              })
+              .catch(err => {
+                console.log(err);
+              })
+          } else {
+            axios.put(`http://localhost:3000/ideas/${id}`, {
+                upvote: like
+              })
+              .then(response => {
+                console.log(like);
+                self.ideas[index].upvote = like
+              })
+              .catch(err => {
+                console.log(err);
+              })
+          }
+        })
     },
-    dislikeIdea(id,index,user_id){
+    dislikeIdea(id, index, user_id) {
       let self = this;
       axios.get(`http://localhost:3000/ideas/one/${id}`)
-      .then(response=>{
-        let dislike = response.data.downvote || []
-        let i = response.data.upvote.indexOf(user_id)
-        let like = response.data.upvote || []
-        dislike.push(user_id) 
-        if(i !== -1){
-          like.splice(i,1)
-          axios.put(`http://localhost:3000/ideas/${id}`,{
-            upvote: like
-          })
-          .then(response=>{
-            console.log(like);
-            self.ideas[index].upvote = like
-          })
-          .catch(err=>{
-            console.log(err);
-          })
-        }
-        else{
-          axios.put(`http://localhost:3000/ideas/${id}`,{
-            downvote: dislike
-          })
-          .then(response=>{
-            self.ideas[index].downvote = dislike
-            console.log(like);
-            console.log(self.ideas[index].upvote);
-          })
-          .catch(err=>{
-            console.log(err);
-          })
-        }
-      })
+        .then(response => {
+          let dislike = response.data.downvote || []
+          let i = response.data.upvote.indexOf(user_id)
+          let like = response.data.upvote || []
+          dislike.push(user_id)
+          if (i !== -1) {
+            like.splice(i, 1)
+            axios.put(`http://localhost:3000/ideas/${id}`, {
+                upvote: like
+              })
+              .then(response => {
+                console.log(like);
+                self.ideas[index].upvote = like
+              })
+              .catch(err => {
+                console.log(err);
+              })
+          } else {
+            axios.put(`http://localhost:3000/ideas/${id}`, {
+                downvote: dislike
+              })
+              .then(response => {
+                self.ideas[index].downvote = dislike
+                console.log(like);
+                console.log(self.ideas[index].upvote);
+              })
+              .catch(err => {
+                console.log(err);
+              })
+          }
+        })
     }
   },
-  created:function(){
+  created: function() {
     this.userStories()
   },
-  computed:{
-    user(){
+  computed: {
+    user() {
       let user = JSON.parse(localStorage.getItem('token'))
-      if(user){
+      if (user) {
         return user
-      }
-      else{
+      } else {
         alert(`You Must Login First`)
-        window.location="/"
+        window.location = "/"
       }
     }
   }
@@ -354,6 +417,9 @@ export default {
   margin-bottom: 50px;
 }
 
+/*.content{
+  height:500px;
+}*/
 .addComment{
   color:black;
 }
@@ -369,6 +435,7 @@ export default {
 
 .stories{
   margin-bottom: 40px;
+  
 }
 
 .com{
@@ -410,6 +477,7 @@ figure.snip1174 {
   margin: 10px;
   width: 100%;
   border-radius: 0px;
+  /*height: 250px;*/
 }
 figure.snip1174 * {
   -webkit-box-sizing: border-box;
