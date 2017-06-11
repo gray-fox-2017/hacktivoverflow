@@ -14,11 +14,7 @@ var userSchema = new Schema({
   },
   email: {
     type : String,
-    required : [true, 'email is required! please fill it!'],
-    validator.validate_async(function(err, isValidEmail) {
-        //Do something with isValidEmail
-        validator.validate(isValidEmail)
-    }); // true
+    required : [true, 'email is required! please fill it!']
 
   }
 });

@@ -12,7 +12,7 @@ var questionSchema = new Schema({
     required : [true, 'password is required! please fill it!']
   },
   creator: { type: Schema.Types.ObjectId, ref: 'User' },
-  replies: [{type: Schema.Types.ObjectId, ref: 'Answer' }],
+  answers: [{type: Schema.Types.ObjectId, ref: 'Answer' }],
   upvotes: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   downvotes: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   createdAt: Date,
