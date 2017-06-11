@@ -2,7 +2,6 @@
   <div id="app">
     <!-- for interface in client web browser -->
     <Navbar></Navbar>
-    <img src="./assets/logo.png">
     <router-view></router-view>
 
   </div>

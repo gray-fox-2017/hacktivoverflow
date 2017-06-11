@@ -14,6 +14,9 @@ router.post('/api/signup', auth.signUp) //done register
 router.post('/api/signin', auth.signIn) //done login
 
 router.get('/api/users', userController.getAlluser) //done get user
+router.get('/api/users/:_id', userController.getUserById) //done
+router.put('/api/users/:_id', userController.update_user) //done edit user hash password
+router.delete('/api/users/:_id', userController.delete_user) //done
 
 router.post('/api/questions',auth.userInfo, questionController.add_question)  //done post question
 router.get('/api/questions',  questionController.getAllquestion) //done get all question
@@ -27,6 +30,17 @@ router.delete('/api/questions/:_id', auth.userInfo, questionController.delete_qu
 router.put('/api/questions/:_id', auth.userInfo, questionController.update_question) //done
 
 // -------------------------------------------------
+router.post('/api/questions/:_id/answer',auth.userInfo, answerController.add_answer)  //done post answers
+
+// router.get('/api/answers',  answerController.getAllanswer) //done get all answer
+router.get('/api/questions/:_id/answer/:_id', answerController.getAnswerById)// i dont think in real apps some asnwer cant get by id
+//
+// //answer voting
+router.put('/api/questions/:_id/answer/:_id/upvote', auth.userInfo, answerController.upvote) //done answer up
+router.put('/api/questions/:_id/answer/:_id/downvote', auth.userInfo, answerController.downvote) //done answers down
+//
+// router.delete('/api/answers/:_id', auth.userInfo, answerController.delete_answer) //done
+// router.put('/api/answers/:_id', auth.userInfo, answerController.update_answer) //done
 
 
 
