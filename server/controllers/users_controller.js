@@ -28,7 +28,8 @@ function login(req, res){
 }
 
 function getAll(req, res) {
-  Users.find({}, function(err, result) {
+  Users.find().populate('thread_id')
+  .exec(function(err, result) {
     if (err) {
       res.send(err.message);
     }
@@ -36,12 +37,20 @@ function getAll(req, res) {
     console.log(result);
     res.send(result);
   });
+  // Users.find().populate('thread_id').populate('answer_id')
+  // .exec(function(err, result) {
+  //   if (err) {
+  //     res.send(err.message);
+  //   }
+  //   console.log("Found the following records:");
+  //   console.log(result);
+  //   res.send(result);
+  // });
 }
 
 function getSingle(req, res) {
-  Users.find({
-    '_id': req.params.id
-  }, function(err, result) {
+  Users.find(req.params.id).populate('thread_id')
+  .exec(function(err, result) {
     if (err) {
       res.send(err.message);
     }
@@ -49,6 +58,15 @@ function getSingle(req, res) {
     console.log(result);
     res.send(result);
   });
+  // Users.find(req.params.id).populate('thread_id').populate('answer_id')
+  // .exec(function(err, result) {
+  //   if (err) {
+  //     res.send(err.message);
+  //   }
+  //   console.log("Found the following record:");
+  //   console.log(result);
+  //   res.send(result);
+  // });
 }
 
 function createUser(req, res) {
@@ -59,8 +77,6 @@ function createUser(req, res) {
     email:      req.body.email,
     password:   hash,
     role:       req.body.role,
-    thread_id:  req.body.thread_id,
-    answer_id:  req.body.answer_id,
     created_at: new Date()
   }, function(err, result) {
     if (err) {
@@ -105,8 +121,6 @@ function updateUser(req, res) {
         email:      req.body.email || user[0]._email,
         password:   hash || user[0].password,
         role:       req.body.role || user[0].role,
-        thread_id:  req.body.thread_id || user[0].thread_id,
-        answer_id:  req.body.answer_id || user[0].answer_id,
         updated_at: new Date()
       }
     }, (err, result) => {

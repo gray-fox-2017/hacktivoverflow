@@ -3,7 +3,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const index = require('./routes/index');
 const users = require('./routes/users');
-//const items = require('./routes/items');
+const threads = require('./routes/threads');
 //const carts = require('./routes/carts');
 const cors = require('cors');
 const mongoose = require('mongoose');
@@ -20,7 +20,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use('/', index);
 app.use('/users/', users);
-//app.use('/items/', items);
+app.use('/threads/', threads);
 //app.use('/carts/', carts);
 
 app.listen(3000, () => console.log("Listening on port 3000"));
