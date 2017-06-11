@@ -62,7 +62,7 @@ var update_question = function(req, res, next) {
 var upvote = function(req, res) {
   let id = req.params._id
   question_model.findById({_id:id}, function(err, result) {
-    if (result.creator == req.body.creator) {
+    if (req.body.creator) {
       console.log('masuk');
       var index_up = result.upvotes.indexOf(req.body.creator)
       var index_down = result.downvotes.indexOf(req.body.creator)
@@ -81,22 +81,37 @@ var upvote = function(req, res) {
 
 var downvote = function(req, res) {
   let id = req.params._id
-  console.log(id);
-  question_model.findById(req.params._id, function(err, result) {
+  console.log('question id : ',id);
+  question_model.findById({_id:id}, function(err, result) {
     console.log(result);
     if (req.body.creator) {
       console.log('-===========================-7');
       var index_up = result.upvotes.indexOf(req.body.creator)
       var index_down = result.downvotes.indexOf(req.body.creator)
+      console.log('up :', index_up);
+      console.log('down: ', index_down);
       if (index_up == -1 && index_down == -1) {
         result.downvotes.push(req.body.creator)
-      } else if (index_down !== -1) {
-        result.upvotes.splice(index_down, 1)
+        console.log('ini sini');
+      } else if (index_up !== -1) {
+        console.log('going to index_up !== -1');
+        // result.upvotes.slice(index_up, 1)
+        var listToDelete = req.body.creator
+        console.log('listToDelete ', listToDelete);
+        for(var i = 0; i < result.upvotes.length; i++) {
+            var obj = result.upvotes[i];
+
+            if(listToDelete.indexOf(obj.id) !== -1) {
+                result.upvotes.splice(i, 1);
+            }
+        }
       }
       result.save(function(err, updated_result) {
         if (!err) res.send(updated_result)
-        else res.send(err)
+        else if(err) res.send(err)
       })
+    } else {
+      console.log('hi gagal');
     }
   })
 }

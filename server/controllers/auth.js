@@ -48,6 +48,8 @@ var userInfo = function(req, res, next) {
     jwt.verify(token, process.env.SECRET, (err, decoded) => {
       if(!err) {
         req.body.creator = decoded.id;
+        console.log('--user--', req.body.creator);
+        console.log('--userinfo--->>',decoded.id);
         next()
       } else {
         res.send(err)
