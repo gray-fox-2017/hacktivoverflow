@@ -2,7 +2,7 @@ const Threads = require('../models/threads_model');
 const Users = require('../models/users_model');
 
 function getAll(req, res) {
-  Threads.find().populate('answers').populate('user_id')
+  Threads.find().populate('answer_id')
     .exec(function(err, result) {
     if (err) {
       res.send(err.message);
@@ -14,7 +14,7 @@ function getAll(req, res) {
 }
 
 function getSingle(req, res) {
-  Threads.find(req.params.id).populate('answers').populate('user_id')
+  Threads.find(req.params.id).populate('answer_id')
   .exec(function(err, result) {
     if (err) {
       res.send(err.message);
@@ -68,8 +68,8 @@ function updateThread(req, res) {
     }, {
       $set: {
         question:   req.body.question || thread[0].question,
-        user_id:    req.body.user_id || thread[0].user_id,
         vote:       req.body.vote || thread[0].vote,
+        user_id:    req.body.user_id || thread[0].user_id,
         updated_at: new Date()
       }
     }, (err, result) => {

@@ -28,7 +28,7 @@ function login(req, res){
 }
 
 function getAll(req, res) {
-  Users.find().populate('thread_id')
+  Users.find().populate('thread_id').populate('answer_id')
   .exec(function(err, result) {
     if (err) {
       res.send(err.message);
@@ -37,19 +37,10 @@ function getAll(req, res) {
     console.log(result);
     res.send(result);
   });
-  // Users.find().populate('thread_id').populate('answer_id')
-  // .exec(function(err, result) {
-  //   if (err) {
-  //     res.send(err.message);
-  //   }
-  //   console.log("Found the following records:");
-  //   console.log(result);
-  //   res.send(result);
-  // });
 }
 
 function getSingle(req, res) {
-  Users.find(req.params.id).populate('thread_id')
+  Users.find(req.params.id).populate('thread_id').populate('answer_id')
   .exec(function(err, result) {
     if (err) {
       res.send(err.message);
@@ -58,15 +49,6 @@ function getSingle(req, res) {
     console.log(result);
     res.send(result);
   });
-  // Users.find(req.params.id).populate('thread_id').populate('answer_id')
-  // .exec(function(err, result) {
-  //   if (err) {
-  //     res.send(err.message);
-  //   }
-  //   console.log("Found the following record:");
-  //   console.log(result);
-  //   res.send(result);
-  // });
 }
 
 function createUser(req, res) {
