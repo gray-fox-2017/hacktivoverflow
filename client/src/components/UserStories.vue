@@ -55,7 +55,7 @@
             <a class="com btn btn-warning" v-if="story.downvote.indexOf(user._id) === -1" v-on:click="dislike(story._id,index,user._id)"><span class="glyphicon glyphicon-thumbs-down"></span></a>
             <a class="com btn btn-danger" v-if="story.downvote.indexOf(user._id) !== -1"><span class="glyphicon glyphicon-thumbs-down"></span>Disliked</a>
           </figcaption>
-          <div class="editStory" v-if="isEditStory === true">
+          <div class="editStory" v-if="isEditStory === true && currentstory === story._id">
             <form>
               <button type="button" class="cla btn btn-danger" v-on:click="closeStory()">X</button><br>
               <h2>Title</h2><br>
