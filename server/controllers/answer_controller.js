@@ -1,10 +1,11 @@
+var express = require('express')
 var router = express.Router()
 var mongoose = require('mongoose')
 const answer_model = require('../models/answer.js')
 
 var methods = {}
 //cara 1, save is more faster than .create
-methods.add_answer = function(req, res, next){
+var add_answer = function(req, res, next){
     var answer = new answer_model({
       answerBody:req.body.answerBody,
       creator: req.body.creator,
@@ -19,14 +20,14 @@ methods.add_answer = function(req, res, next){
     })
 }
 
-methods.getAllanswer = function(req, res, next) {
+var getAllanswer = function(req, res, next) {
   answer_model.find({}, function(err, result) {
     if(!err) res.send(result)
     else console.log(err);
   })
 }
 //method deleteOne can also use remove, deleteOne with promise .then / callback and deleteMany
-methods.delete_answer = function(req, res, next) {
+var delete_answer = function(req, res, next) {
   answer_model.deleteOne({_id:req.params.id}, function(err, result) {
     if(!err) res.send("success deleted")
     else res.send(err)
@@ -36,7 +37,7 @@ methods.delete_answer = function(req, res, next) {
 //trying using findOneandDelete
 //docs : http://mongoosejs.com/docs/api.html#model_Model.findOneAndUpdate
 
-methods.update_answer = function(req, res, next) {
+var update_answer = function(req, res, next) {
   let id = req.params._id
   answer_model.findOneAndUpdate({_id:id}, {$set : {answerBody: req.body.answerBody, updatedAt: new Date()}}, function(err, result) {
     if(!err) res.send("update successful\n"+ result)
@@ -44,9 +45,9 @@ methods.update_answer = function(req, res, next) {
   })
 }
 
-methods.upvote = function(req, res) {
+var upvotes = function(req, res) {
   let id = req.params._id
-  answer_model.findById(id, (err, result) {
+  answer_model.findById(id, function(err, result) {
     if (result.creator == req.body.user) {
       var index_up = result.upvotes.indexOf(req.body.user)
       var index_down = result.downvotes.indexOf(req.body.user)
@@ -55,7 +56,7 @@ methods.upvote = function(req, res) {
       } else if (index_down !== -1) {
         result.downvotes.splice(index_down, 1)
       }
-      result.save((err, updated_result) {
+      result.save(function(err, updated_result) {
         if (!err) res.send(updated_result)
         else res.send(err)
       })
@@ -63,9 +64,9 @@ methods.upvote = function(req, res) {
   })
 }
 
-methods.downvotes = function(req, res) {
+var downvotes = function(req, res) {
   let id = req.params._id
-  answer_model.findById(id, (err, result) {
+answer_model.findById(id, function(err, result) {
     if (result.creator == req.body.user) {
       var index_up = result.upvotes.indexOf(req.body.user)
       var index_down = result.downvotes.indexOf(req.body.user)
@@ -74,7 +75,7 @@ methods.downvotes = function(req, res) {
       } else if (index_down !== -1) {
         result.upvotes.splice(index_down, 1)
       }
-      result.save((err, updated_result) {
+      result.save(function(err, updated_result) {
         if (!err) res.send(updated_result)
         else res.send(err)
       })
@@ -82,4 +83,12 @@ methods.downvotes = function(req, res) {
   })
 }
 
-module.exports = methods
+module.exports = {
+  downvotes,
+  upvotes,
+  update_answer,
+  delete_answer,
+  getAllanswer,
+  add_answer
+
+}
