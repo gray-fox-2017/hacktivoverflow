@@ -1,5 +1,6 @@
 const Threads = require('../models/threads_model');
 const Users = require('../models/users_model');
+const Answers = require('../models/answers_model');
 
 function getAll(req, res) {
   Threads.find().populate('answer_id')
@@ -27,6 +28,7 @@ function getSingle(req, res) {
 
 function createThread(req, res) {
   Threads.create({
+    title:      req.body.title,
     question:   req.body.question,
     user_id:    req.body.user_id,
     vote:       req.body.vote,
@@ -55,8 +57,17 @@ function deleteThread(req, res) {
     }
     console.log("Delete:");
     console.log(result);
-    res.send(result);
   });
+  Answers.remove({
+    'thread_id': req.params.id
+  }, function(err, result) {
+    if (err) {
+      res.send(err.message);
+    }
+    console.log("Delete:");
+    console.log(result);
+  });
+  res.send('Delete success');
 }
 
 function updateThread(req, res) {
@@ -67,6 +78,7 @@ function updateThread(req, res) {
       _id: thread[0]._id
     }, {
       $set: {
+        title:      req.body.title || thread[0].title,
         question:   req.body.question || thread[0].question,
         vote:       req.body.vote || thread[0].vote,
         user_id:    req.body.user_id || thread[0].user_id,

@@ -28,7 +28,7 @@ function login(req, res){
 }
 
 function getAll(req, res) {
-  Users.find().populate('thread_id').populate('answer_id')
+  Users.find().populate('thread_id answer_id')
   .exec(function(err, result) {
     if (err) {
       res.send(err.message);
@@ -40,7 +40,7 @@ function getAll(req, res) {
 }
 
 function getSingle(req, res) {
-  Users.find(req.params.id).populate('thread_id').populate('answer_id')
+  Users.find(req.params.id).populate('thread_id answer_id')
   .exec(function(err, result) {
     if (err) {
       res.send(err.message);
@@ -58,7 +58,7 @@ function createUser(req, res) {
     name:       req.body.name,
     email:      req.body.email,
     password:   hash,
-    role:       req.body.role,
+    role:       req.body.role || 'user',
     created_at: new Date()
   }, function(err, result) {
     if (err) {
