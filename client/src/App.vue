@@ -37,7 +37,7 @@ export default {
   },
   created () {
     this.getToken()
-    setTimeout(this.getUserData(), 3000)
+    this.getUserData()
   }
 }
 </script>

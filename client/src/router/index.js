@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import MainPage from '@/components/MainPage'
 import Auth from '@/components/Auth'
 import ThreadDetail from '@/components/ThreadDetail'
+import EditThread from '@/components/EditThread'
 import BootstrapVue from 'bootstrap-vue'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
@@ -26,6 +27,10 @@ export default new Router({
     {
       path: '/thread',
       component: ThreadDetail
+    },
+    {
+      path: '/edit',
+      component: EditThread
     }
   ]
 })

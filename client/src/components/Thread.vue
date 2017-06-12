@@ -43,7 +43,7 @@ export default {
   methods: {
     threadDetail (event) {
       event.preventDefault()
-      this.$router.push(`/thread?id=${this.article._id}`)
+      this.$router.push({path: 'thread', query: { id: this.article._id }})
     }
   }
 }

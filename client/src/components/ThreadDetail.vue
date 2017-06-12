@@ -29,16 +29,19 @@
         <p>asked by: {{ thread.creator.name }}</p>
       </div>
     </div>
+    <div class="row">
+      <div class="col-md-5"></div>
+      <div class="col-md-1">
+        <button v-if="user.id === thread.creator._id" type="button" class="btn btn-default"><router-link :to="{ path: 'edit', query: { id: thread._id }}">Edit</router-link></button>
+      </div>
+      <div class="col-md-2">
+        <button v-if="user.id === thread.creator._id" @click="deleteThread" type="button" class="btn btn-danger">Delete Thread</button>
+      </div>
+    </div>
     <div class="row" style="margin-top: 30px">
       <div class="col-md-5">
         <h5 v-if="thread.replies.length > 1">{{ thread.replies.length }} replies</h5>
         <h5 v-else>{{ thread.replies.length }} reply</h5>
-      </div>
-      <div class="col-md-1">
-        <button v-if="user.id === thread.creator._id" @click="editThread" type="button" class="btn btn-default">Edit</button>
-      </div>
-      <div class="col-md-2">
-        <button v-if="user.id === thread.creator._id" @click="deleteThread" type="button" class="btn btn-danger">Delete Thread</button>
       </div>
     </div>
     <Reply v-for="response in value" @delete="deleteValue" :repid="response._id" :parent="thread._id" :key="response._id"></Reply>
@@ -134,10 +137,6 @@ export default {
         })
       }
     },
-    editThread () {
-      let self = this
-      console.log(self.thread)
-    },
     updateValue (tes) {
       this.value.push(tes)
     },
@@ -153,7 +152,7 @@ export default {
 }
 </script>
 
-<style lang="css" scoped>
+<style lang="css">
 .prime {
   padding: 10px 0;
   border-bottom: 1px solid lightgrey;
