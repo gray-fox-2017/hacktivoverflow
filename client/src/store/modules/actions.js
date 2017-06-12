@@ -132,6 +132,20 @@ export const Actions = {
       console.log('error, masuk ke catch');
     })
   },
+  editAnswer: ({commit}, payload) => {
+    axios.put(`http://localhost:3000/editAnswer/${payload.questionid}/${payload.answerid}`, {
+      content: payload.content
+    })
+    .then(response => {
+      console.log('Action edit answer');
+      console.log(response.data);
+      commit('editAnswer', response.data)
+    })
+    .catch(error => {
+      console.log(error);
+      console.log('error, masuk ke catch');
+    })
+  },
   deleteAnswer: ({commit}, payload) => {
     axios.delete(`http://localhost:3000/deleteAnswer/${payload.questionid}/${payload.answerid}`)
     .then(response => {

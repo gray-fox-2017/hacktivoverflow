@@ -31,11 +31,15 @@ export const Mutations = {
     // state.newQuestion = payload
   },
   deleteQuestion: (state, payload) => {
-    // state.dataQuestions = payload
-    let questions = state.dataQuestions
-    questions.splice(questions.indexOf(payload), 1)
+    state.dataQuestions = payload
+    // window.location = '/'
+    // let questions = state.dataQuestions
+    // questions.splice(questions.indexOf(payload), 1)
   },
   addAnswer: (state, payload) => {
+    state.detailQuestion = payload
+  },
+  editAnswer: (state, payload) => {
     state.detailQuestion = payload
   },
   deleteAnswer: (state, payload) => {

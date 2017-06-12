@@ -149,6 +149,9 @@ export default {
           console.log('payload new question');
           console.log(payload);
           this.$store.dispatch('addQuestion', payload)
+          this.formNewQuestion.title = ''
+          this.formNewQuestion.content = ''
+          this.formNewQuestion.tags = []
           this.dialogFormVisibleNewQuestion = false
         } else {
           console.log('error add new todo!!');

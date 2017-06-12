@@ -47,27 +47,27 @@ methods.deleteAnswer = (req, res) => {
   })
 }
 
-// methods.editAnswer = (req, res) => {
-//   Question.findById(req.params.questionid, (error, question) => {
-//     if (error) res.json({error})
-//     question.answers.filter(answer => answer._id === req.params.answerid)
-//
-//     // res.send(question.answers[0])
-//     let newAnswer = {
-//       content: req.body.content || question.answers[0].content,
-//       answeredBy: req.body.answeredBy || question.answers[0].answeredBy,
-//       updatedDate: new Date(),
-//       createdDate: question.answers[0].createdDate,
-//       voteCounts: req.body.voteCounts || question.answers[0].voteCounts,
-//       votes: req.body.votes || question.answers[0].votes
-//     }
-//
-//     // question.answers[0].push(newAnswer)
-//     question.save((err, newData) => {
-//       res.send(newAnswer)
-//     })
-//   })
-// }
+methods.editAnswer = (req, res) => {
+  Question.findById(req.params.questionid, (error, question) => {
+    if (error) res.json({msg: `Oopps, Something wrong ${error}`, succes: false})
+    else {
+      question.answers.map(answer => {
+        if (answer._id == req.params.answerid) {
+          console.log('Data answer by id saat edit: ');
+          console.log(answer);
+          answer.content = req.body.content || answer.content
+          answer.updatedDate = new Date() || answer.updatedDate
+          question.save((err, result) => {
+            if (err) req.json({msg: `Oopps, Something wrong ${error}`, succes: false})
+            else {
+              res.send(result)
+            }
+          })
+        }
+      })
+    }
+  })
+}
 
 methods.getAllQuestion = (req, res) => {
   Question.find({})

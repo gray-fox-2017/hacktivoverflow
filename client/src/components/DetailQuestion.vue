@@ -54,10 +54,11 @@
                 </div>
               </el-col>
               <el-col :span="18" style="text-align:-webkit-auto;">
+                <!-- {{answer.answeredBy}} -->
                 <p style="margin-top:0px;">
                   {{answer.content}}
-                  <!-- <el-button :plain="true" type="warning" size="mini" @click="viewFormEditAnswer(answer)">edit</el-button> -->
-                  <el-button v-if="answer.answeredBy._id === cekUser" :plain="true" type="danger" size="mini" @click="deleteAnswer(answer, index)">delete</el-button>
+                  <el-button v-if="answer.answeredBy._id == cekUser" :plain="true" type="warning" size="mini" @click="viewFormEditAnswer(answer, index)">edit</el-button>
+                  <el-button v-if="answer.answeredBy._id == cekUser" :plain="true" type="danger" size="mini" @click="deleteAnswer(answer, index)">delete</el-button>
                 </p>
                 <span class="teks-bawah">answered {{answer.createdDate}} by <b>{{answer.answeredBy.name}}</b></span>
               </el-col>
@@ -121,7 +122,7 @@
           </el-form>
         </el-dialog>
 
-        <!-- <el-dialog title="Edit Answer" v-model="dialogFormVisibleEditAnswer">
+        <el-dialog title="Edit Answer" v-model="dialogFormVisibleEditAnswer">
           <el-form :model="formEditAnswer" :rules="rules" ref="formEditAnswer" label-width="120px" class="demo-ruleForm" style="padding:0px 20px 0px 5px;margin-top:10px;">
             <el-form-item label="Question">
               <span><b>{{indexquestion.title}}</b></span>
@@ -134,15 +135,15 @@
               <el-button @click="resetForm('formEditAnswer')">Reset</el-button>
             </el-form-item>
           </el-form>
-        </el-dialog> -->
+        </el-dialog>
       </div>
     </el-col>
 
     <el-col :span="6">
       <div class="grid-content">
         <div style="margin-top: 15px;text-align:-webkit-auto;">
-          <p style="color:navy;">Related</p>
-          <el-tag style="margin:0px 5px 5px 0px;" type="gray">Judul Question</el-tag>
+          <p style="color:navy;">List of Question</p>
+          <el-tag style="margin:0px 5px 5px 0px;" type="gray" v-for="(question, index) in dataQuestions" :key="index">{{question.title}}</el-tag>
         </div>
       </div>
     </el-col>
@@ -167,6 +168,7 @@ export default {
         content: ''
       },
       formEditAnswer: {
+        answerid: '',
         content: ''
       },
       rules: {
@@ -225,9 +227,10 @@ export default {
     viewFormNewAnswer() {
       this.dialogFormVisibleNewAnswer = true
     },
-    viewFormEditAnswer(data) {
+    viewFormEditAnswer(data, index) {
       this.dialogFormVisibleEditAnswer = true
       this.formEditAnswer.content = data.content
+      this.formEditAnswer.answerid = data._id
     },
     submitFormEditQuestion(formName) {
       this.$refs[formName].validate((valid) => {
@@ -273,12 +276,17 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           let payload = {
-            id: this.id,
-            answeredBy: window.localStorage.getItem('id'),
+            questionid: this.id,
+            answerid: this.formEditAnswer.answerid,
             content: this.formEditAnswer.content
           }
-          this.$store.dispatch('addAnswer', payload)
-          // this.$store.dispatch('detailQuestion', this.id)
+          this.$store.dispatch('editAnswer', payload)
+          this.indexquestion.answers.forEach(answer => {
+            if (answer._id == payload.answerid) {
+              answer.content = payload.content
+            }
+          })
+          // this.indexquestion.content = payload.content
           this.dialogFormVisibleEditAnswer = false
         } else {
           console.log('error edit answer!!');
@@ -311,7 +319,8 @@ export default {
         this.$store.dispatch('deleteQuestion', this.id)
       }
       this.$store.state.dataQuestions
-      this.$router.push('/')
+      window.location = '/'
+      // this.$router.push('/')
     },
     voteToQuestion(vote, answer) {
       let payload = {
@@ -355,11 +364,13 @@ export default {
     indexquestion() {
       return this.$store.state.detailQuestion
     },
-
+    dataQuestions() {
+      return this.$store.state.dataQuestions
+    }
   },
   created() {
     this.$store.dispatch('detailQuestion', this.id)
-    // this.$store.dispatch('dataQuestions')
+    this.$store.dispatch('dataQuestions')
     this.cekUser = window.localStorage.getItem('id')
   }
 }
