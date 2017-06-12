@@ -32,14 +32,10 @@ export default {
   data () {
     return {
       username: '',
-      password: '',
-      msg: ''
+      password: ''
     }
   },
   methods: {
-    msgClear () {
-      this.msg = ''
-    },
     signin () {
       axios.post('http://localhost:3000/api/signin', {
         username: this.username,
@@ -52,9 +48,12 @@ export default {
           this.msg = response.data.msg
         } else {
           var token = response.data.token
+          console.log('Hi Erwin !',response.data);
           localStorage.setItem('token', token)
-          window.location.href = 'http://localhost:8080/#/content'
-          location.reload()
+          localStorage.setItem('username', response.data.username)
+          localStorage.setItem('email', response.data.email)
+          this.$router.push("/")
+          // location.reload()
         }
       })
       .catch(err => {

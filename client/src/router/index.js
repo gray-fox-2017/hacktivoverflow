@@ -6,15 +6,16 @@ import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import Login from '@/components/Login'
 import Register from '@/components/Register'
-import Home from '@/components/Home'
 import Content from '@/components/Content'
+import Welcome from '@/components/Welcome'
+
 // import
 Vue.use(Router)
 
 export default new Router({
   routes: [
     {
-      path: '/',
+      path: '/hello',
       name: 'Hello',
       component: Hello
     },
@@ -29,14 +30,14 @@ export default new Router({
       component: Register
     },
     {
-      path: '/home',
-      name: 'Home',
-      component: Home
-    },
-    {
       path: '/content',
       name: 'Content',
       component: Content
+    },
+    {
+      path: '/',
+      name: 'Welcome',
+      component: Welcome
     }
   ]
 })

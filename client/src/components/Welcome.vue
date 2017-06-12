@@ -85,13 +85,26 @@
 
 <script>
 export default {
-  props:['questions'],
   data () {
     return {
       status_comment : "",
       id_question: "",
-      id_user: ""
+      id_user: "",
+      questions: []
     }
+  },
+  created () {
+    // this.getQuestion()
+    this.questions = this.getQuestion()
+    console.log('Hi Token !',localStorage.getItem('token'));
+    if (localStorage.getItem('token')) {
+      this.islogin == true
+    }
+    // else {
+    //   // window.alert('login please')
+    //   window.location = "/login"
+    // }
+
   },
   methods: {
     comment (id) {
@@ -111,6 +124,23 @@ export default {
       })
       .then(function(response) {
         console.log(response);
+      })
+      .catch(function(err) {
+        console.log(err);
+      })
+    },
+    getQuestion: function() {
+      var self = this
+      self.home = true
+      axios.get('http://localhost:3000/api/questions', {
+        headers: {
+          'token': localStorage.getItem('token')
+        }
+      })
+      .then(function(response) {
+        self.questions = response.data
+        console.log(JSON.stringify(response.data));
+
       })
       .catch(function(err) {
         console.log(err);

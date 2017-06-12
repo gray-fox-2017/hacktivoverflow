@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <Navbar></Navbar>
-    <router-view></router-view>
+    <Navbar :nilailogin="islogin"></Navbar>
+    <router-view :nilailogin="islogin"></router-view>
   </div>
 </template>
 
@@ -14,24 +14,16 @@ export default {
   },
   data () {
     return {
-      decoded : []
+      islogin: false
     }
   },
   created () {
-    var self = this
-    axios.get('http://localhost:3000/api/users/validate',{
-      body:{
-        token : localStorage.getItem('token')
-      }
-    })
-    .then(response=>{
-      self.decodedToken = response.data
-      window.location.href = 'http://localhost:8080/#/content'
-      console.log(self.decodedToken);
-    })
-    .catch(err=>{
-      console.log(err);
-    })
+    if (localStorage.getItem('token') !== null) {
+      this.islogin = true
+    } else {
+      this.islogin = false
+      this.$router.push("/login")
+    }
   }
 }
 </script>

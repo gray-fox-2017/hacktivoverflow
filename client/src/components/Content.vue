@@ -1,36 +1,57 @@
 <template lang="html">
-  <div id="app">
-    <div class="container">
+    <div class="container" v-if="nilailogin == true">
       <div class="row">
         <h3>Top article</h3>
         <div class="row">
-          <home v-bind:questions="questions"></home>
+          <Home v-bind:questions="questions"></Home> <!-- home adalah child dari components content-->
+          <!-- {{}} -->
           <!-- <h1 v-for="question in questions">{{question.title}}</h1> -->
         </div>
       </div>
-
     </div>
-  </div>
+    <div class="container" v-else>
+      <h1>test</h1>
+    </div>
+
 </template>
 
 <script>
 import Home from './Home'
 export default {
+  props: ['nilailogin'],
   components: {
     Home
+    // Welcome
   },
   data () {
     return {
-      questions: []
+      questions: [],
+      islogin: false
     }
   },
   created () {
     this.getQuestion()
     this.questions = this.getQuestion()
-    console.log('hi', this.questions);
+    console.log('Hi Token !',localStorage.getItem('token'));
+    if (localStorage.getItem('token')) {
+      this.islogin == true
+    }
+    // else {
+    //   // window.alert('login please')
+    //   window.location = "/login"
+    // }
+
+  },
+  computed: {
+    cekLogin: function() {
+      if (localStorage.getItem('token')) {
+        this.islogin == true
+        return this.islogin
+      }
+
+    }
   },
   methods: {
-
     getQuestion: function() {
       var self = this
       self.home = true
