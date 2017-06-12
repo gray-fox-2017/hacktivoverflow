@@ -13,6 +13,7 @@ export const store = new Vuex.Store({
     dataTags: [],
     dataQuestions: [],
     detailQuestion: [],
+    newQuestion: '',
     dateConvert: '',
     timeConvert: ''
   },

@@ -6,7 +6,7 @@ methods.createQuestion = (req, res) => {
     title: req.body.title,
     content: req.body.content,
     askedBy: req.body.askedBy,
-    tags: req.body.tags,
+    tags: req.body.tags || [],
     answers: [],
     votes: []
   })
@@ -30,6 +30,44 @@ methods.createAnswer = (req, res) => {
     })
   })
 }
+
+methods.deleteAnswer = (req, res) => {
+  Question.findById(req.params.questionid, (err, question) => {
+    if (err) res.json({msg: `Oopps, Something wrong ${error}`, succes: false})
+    else {
+      question.answers.id(req.params.answerid).remove()
+      question.answerCounts -= 1
+      question.save(err => {
+        if (err) res.json({msg: `Oopps, Something wrong ${error}`, succes: false})
+        else {
+          res.json({question, succes: true});
+        }
+      })
+    }
+  })
+}
+
+// methods.editAnswer = (req, res) => {
+//   Question.findById(req.params.questionid, (error, question) => {
+//     if (error) res.json({error})
+//     question.answers.filter(answer => answer._id === req.params.answerid)
+//
+//     // res.send(question.answers[0])
+//     let newAnswer = {
+//       content: req.body.content || question.answers[0].content,
+//       answeredBy: req.body.answeredBy || question.answers[0].answeredBy,
+//       updatedDate: new Date(),
+//       createdDate: question.answers[0].createdDate,
+//       voteCounts: req.body.voteCounts || question.answers[0].voteCounts,
+//       votes: req.body.votes || question.answers[0].votes
+//     }
+//
+//     // question.answers[0].push(newAnswer)
+//     question.save((err, newData) => {
+//       res.send(newAnswer)
+//     })
+//   })
+// }
 
 methods.getAllQuestion = (req, res) => {
   Question.find({})
@@ -77,96 +115,195 @@ methods.getDetailAnswerByQuestion = (req, res) => {
 }
 
 methods.voteToQuestion = (req, res) => {
-  Question.findById(req.params.id, (error, question) => {
-    if (error) res.json({error})
-    // let exist = question.votes.some(data => data.votedBy == req.body.userActive)
-    console.log('*****');
-    console.log(req.body.votes.vote);
-    exist = question.votes.some(data => data.votedBy == req.body.userActive)
-
-    console.log('Cek status vote');
-    console.log(exist);
-    if (exist) {
-      res.json({
-        statusVote: false,
-        message: 'You have already voted'
-      })
-    } else {
-      question.votes.push(req.body.votes)
-      if (req.body.votes.vote == 1) {
-        question.voteCounts = question.votes.length
-        console.log('cek voteCounts question');
-        console.log(question.voteCounts);
-        question.save((err, record) => {
-          if (err) res.json({err})
-          console.log(record);
-          res.json({
-            statusVote: err == null ? true : false,
-            message: 'Upvote questions success'
-          })
+  let questionid = req.params.id
+  Question.findById(questionid, (error, question) => {
+    if (error) res.json({msg: `Oopps, Something wrong ${error}`, success:false})
+    else {
+      let detailVote = []
+      // let answer = question.answers.id(req.params.answerid)
+      if (req.body.vote == 1) {
+        question.votes.filter(voteX => {
+          if (voteX.vote == 1) {
+            console.log('Votex 1');
+            console.log(voteX);
+            return detailVote.push(voteX)
+          }
+        })
+      } else if (req.body.vote == -1) {
+        question.votes.filter(voteX => {
+          if (voteX.vote == -1) {
+            console.log('Votex -1');
+            console.log(voteX);
+            return detailVote.push(voteX)
+          }
         })
       }
-      else {
-        question.voteCounts -= 1
-        console.log('cek voteCounts question');
-        console.log(question.voteCounts);
-        question.save((err, record) => {
-          if (err) res.json({err})
-          console.log(record);
-          res.json({
-            statusVote: err == null ? true : false,
-            message: 'Donwvote question success'
-          })
+      console.log('++++');
+      console.log(detailVote);
+      if (detailVote.some(vote => vote.votedBy == req.body.votedBy)) {
+        res.json({msg: 'Oopps, You have already vote this question', success: false})
+      } else {
+        Question.findOneAndUpdate({ _id: question._id},
+        { $push: {'votes': {votedBy: req.body.votedBy, vote: req.body.vote } }},
+        { new: true}, (err, result) => {
+          if (err) res.json({msg: `Oopps, Something wrong ${err}`, success: false})
+          console.log('*** result ***');
+          console.log(result);
+          if (req.body.vote == 1) {
+            question.voteCounts += 1
+            question.save()
+            res.json({result, success: true, msg: 'Thank you for your upVote.'})
+          } else if (req.body.vote == -1) {
+            question.voteCounts -= 1
+            question.save()
+            res.json({result, success: true, msg: 'Thank you for your downVote.'})
+          }
+          // res.json({result, success: true, msg: 'Thank you for your vote.'})
         })
       }
     }
   })
+
+  // Question.findById(req.params.id, (error, question) => {
+  //   if (error) res.json({error})
+  //   // let exist = question.votes.some(data => data.votedBy == req.body.userActive)
+  //   console.log('*****');
+  //   console.log(req.body.votes.vote);
+  //   exist = question.votes.some(data => data.votedBy == req.body.userActive)
+  //
+  //   console.log('Cek status vote');
+  //   console.log(exist);
+  //   if (exist) {
+  //     res.json({
+  //       statusVote: false,
+  //       message: 'You have already voted'
+  //     })
+  //   } else {
+  //     question.votes.push(req.body.votes)
+  //     if (req.body.votes.vote == 1) {
+  //       question.voteCounts = question.votes.length
+  //       console.log('cek voteCounts question');
+  //       console.log(question.voteCounts);
+  //       question.save((err, record) => {
+  //         if (err) res.json({err})
+  //         console.log(record);
+  //         res.json({
+  //           statusVote: err == null ? true : false,
+  //           message: 'Upvote questions success'
+  //         })
+  //       })
+  //     }
+  //     else {
+  //       question.voteCounts -= 1
+  //       console.log('cek voteCounts question');
+  //       console.log(question.voteCounts);
+  //       question.save((err, record) => {
+  //         if (err) res.json({err})
+  //         console.log(record);
+  //         res.json({
+  //           statusVote: err == null ? true : false,
+  //           message: 'Donwvote question success'
+  //         })
+  //       })
+  //     }
+  //   }
+  // })
 }
 
 methods.voteToAnswer = (req, res) => {
-  Question.findById(req.params.questionid, (error, question) => {
-    if (error) res.json({error})
-    let index = question.answers.findIndex(data => data._id == req.params.answerid)
-    console.log('ini index answer');
-    console.log(index);
-    let exist = question.answers[index].votes.some(data => data.votedBy == req.body.userActive)
-
-    console.log('Cek status vote');
-    console.log(exist);
-    if (exist) {
-      res.json({
-        statusVote: false,
-        message: 'You have already voted'
-      })
-    } else {
-      question.answers[index].votes.push(req.body.votes)
-      if (req.body.votes.vote == 1) {
-        question.answers[index].voteCounts = question.answers[index].votes.length
-        console.log('cek voteCounts anwer');
-        console.log(question.answers[index].voteCounts);
-        question.save((err, record) => {
-          if (err) res.json({err})
-          console.log(record);
-          res.json({
-            statusVote: err == null ? true : false,
-            message: 'Upvote answer success'
-          })
+  let questionid = req.params.questionid
+  Question.findById(questionid, (error, question) => {
+    if (error) res.json({msg: `Oopps, Something wrong ${error}`, success:false})
+    else {
+      let detailVote = []
+      let answer = question.answers.id(req.params.answerid)
+      if (req.body.vote == 1) {
+        answer.votes.filter(voteX => {
+          if (voteX.vote == 1) {
+            console.log('Votex 1');
+            console.log(voteX);
+            return detailVote.push(voteX)
+          }
         })
-      } else if (req.body.votes.vote == -1){
-        question.answers[index].voteCounts -= 1
-        console.log('cek voteCounts anwer');
-        console.log(question.answers[index].voteCounts);
-        question.save((err, record) => {
-          if (err) res.json({err})
-          console.log(record);
-          res.json({
-            statusVote: err == null ? true : false,
-            message: 'Downvote answer success'
-          })
+      } else if (req.body.vote == -1) {
+        answer.votes.filter(voteX => {
+          if (voteX.vote == -1) {
+            console.log('Votex -1');
+            console.log(voteX);
+            return detailVote.push(voteX)
+          }
+        })
+      }
+      console.log('++++');
+      console.log(detailVote);
+      if (detailVote.some(vote => vote.votedBy == req.body.votedBy)) {
+        res.json({msg: 'Oopps, You have already vote this answer', success: false})
+      } else {
+        Question.findOneAndUpdate({ _id: questionid, 'answers._id': req.params.answerid},
+        { $push: {'answers.$.votes': {votedBy: req.body.votedBy, vote: req.body.vote } }},
+        { new: true}, (err, result) => {
+          if (err) res.json({msg: `Oopps, Something wrong ${err}`, success: false})
+          console.log('*** result ***');
+          console.log(result);
+          let index = result.answers.findIndex(data => data._id == req.params.answerid)
+          if (req.body.vote == 1) {
+            question.answers[index].voteCounts += 1
+            question.save()
+            res.json({result, success: true, msg: 'Thank you for your upVote.'})
+          } else if (req.body.vote == -1) {
+            question.answers[index].voteCounts -= 1
+            question.save()
+            res.json({result, success: true, msg: 'Thank you for your downVote.'})
+          }
+          // res.json({result, success: true, msg: 'Thank you for your vote.'})
         })
       }
     }
   })
+
+  // Question.findById(req.params.questionid, (error, question) => {
+  //   if (error) res.json({error})
+  //   let index = question.answers.findIndex(data => data._id == req.params.answerid)
+  //   console.log('ini index answer');
+  //   console.log(index);
+  //   let exist = question.answers[index].votes.some(data => data.votedBy == req.body.userActive)
+  //
+  //   console.log('Cek status vote');
+  //   console.log(exist);
+  //   if (exist) {
+  //     res.json({
+  //       statusVote: false,
+  //       message: 'You have already voted'
+  //     })
+  //   } else {
+  //     question.answers[index].votes.push(req.body.votes)
+  //     if (req.body.votes.vote == 1) {
+  //       question.answers[index].voteCounts = question.answers[index].votes.length
+  //       console.log('cek voteCounts anwer');
+  //       console.log(question.answers[index].voteCounts);
+  //       question.save((err, record) => {
+  //         if (err) res.json({err})
+  //         console.log(record);
+  //         res.json({
+  //           statusVote: err == null ? true : false,
+  //           message: 'Upvote answer success'
+  //         })
+  //       })
+  //     } else if (req.body.votes.vote == -1){
+  //       question.answers[index].voteCounts -= 1
+  //       console.log('cek voteCounts anwer');
+  //       console.log(question.answers[index].voteCounts);
+  //       question.save((err, record) => {
+  //         if (err) res.json({err})
+  //         console.log(record);
+  //         res.json({
+  //           statusVote: err == null ? true : false,
+  //           message: 'Downvote answer success'
+  //         })
+  //       })
+  //     }
+  //   }
+  // })
 }
 
 methods.updateQuestion = (req, res) => {

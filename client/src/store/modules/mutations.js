@@ -19,8 +19,29 @@ export const Mutations = {
   detailQuestion: (state, payload) => {
     state.detailQuestion = payload
   },
+  addQuestion: (state, payload) => {
+    state.dataQuestions.push(payload)
+  },
   editQuestion: (state, payload) => {
     state.dataQuestions = payload
+
+    // var questions = state.dataQuestions
+    // questions.splice(questions.indexOf(payload.id), 1)
+    // state.dataQuestions = questions
+    // state.newQuestion = payload
+  },
+  deleteQuestion: (state, payload) => {
+    // state.dataQuestions = payload
+    let questions = state.dataQuestions
+    questions.splice(questions.indexOf(payload), 1)
+  },
+  addAnswer: (state, payload) => {
+    state.detailQuestion = payload
+  },
+  deleteAnswer: (state, payload) => {
+    // state.detailQuestion = payload
+    let answers = state.detailQuestion
+    answers.splice(answers.indexOf(payload.answerid), 1)
   },
   convertDate: (state, payload) => {
     let getDate = new Date(payload);

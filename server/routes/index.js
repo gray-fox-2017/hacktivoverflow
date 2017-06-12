@@ -15,6 +15,7 @@ router.delete('/deleteuser/:id', userController.deleteUserById)
 
 router.post('/createquestion', questionController.createQuestion)
 router.put('/createanswer/:id', questionController.createAnswer)
+router.delete('/deleteAnswer/:questionid/:answerid', questionController.deleteAnswer)
 router.get('/allquestion', questionController.getAllQuestion)
 router.get('/detailquestion/:id', questionController.getDetailQuestion)
 router.get('/detailanswer/:questionid/:answerid', questionController.getDetailAnswerByQuestion)

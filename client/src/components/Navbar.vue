@@ -53,7 +53,7 @@
     </el-dialog>
     <img src="https://geffchang.files.wordpress.com/2012/05/stackoverflow-stickers2.jpg" v-show="statusLogin === null" style="height:600px;width:1270px;opacity:0.4;filter:alpha(opacity=50);">
 
-    <Content v-show="statusLogin"></Content>
+    <!-- <Content v-show="statusLogin"></Content> -->
   </div>
 </template>
 
@@ -112,7 +112,7 @@ function statusChangeCallback(response) {
       axios.post(url, body)
         .then((res) => {
           console.log('Tessss');
-          console.log(res);
+          console.log(res.data);
           window.localStorage.setItem('id', res.data._id);
            window.location = "/"
         })
