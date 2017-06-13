@@ -15,7 +15,8 @@ export default {
   name: 'index',
   data () {
     return {
-      threads: []
+      threads: [],
+      token: localStorage.getItem('token')
     }
   },
   mounted () {

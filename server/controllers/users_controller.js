@@ -18,7 +18,7 @@ function login(req, res){
       else if(bcrypt.compareSync(req.body.password, user.password)){
         let token = jwt.sign({email: user.email, role: user.role, userid: user._id}, secret, {expiresIn:'1h'})
         console.log('success');
-        res.send(token);
+        res.send({token: token, userid: user._id});
       } else {
         console.log('failed');
         res.send('wrong password');
