@@ -15,6 +15,9 @@ var answerSchema = new Schema ({
   creator: {
     type: Schema.Types.ObjectId, ref: 'User'
   },
+  questionId: {
+    type: Schema.Types.ObjectId, ref: 'Question'
+  },
   createdAt: Date,
   updatedAt: Date
 })

@@ -1,4 +1,5 @@
 var Answer = require('../models/answer');
+var Question = require('../models/question');
 var util = require('../helpers/util');
 var methods = {}
 
@@ -17,22 +18,46 @@ methods.get = (req, res) => {
 }
 
 methods.create = (req, res) => {
+  var questionId = req.params.question_id
   var answer = req.body.answer;
   if (req.headers.token) {
     util.userInfo(req.headers.token, function(user){
-      Answer.create({
-        answer: answer,
-        creator: user.id,
-        upVote: [],
-        downVote: [],
-        createdAt: new Date(),
-        updatedAt: new Date()
+      Question.findById(req.params.question_id)
+      .then(question => {
+        var newAnswer = new Answer({
+          answer: answer,
+          creator: user.id,
+          questionId: questionId,
+          upVote: [],
+          downVote: [],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+
+        newAnswer.save((err, result) => {
+          if(err) console.log(err)
+          else{
+            question.answer.push(result._id)
+            question.save((err, result) => {
+              res.send(err ? err : result)
+            })
+          }
+        })
+        // Answer.create({
+        //   answer: answer,
+        //   creator: user.id,
+        //   questionId: questionId,
+        //   upVote: [],
+        //   downVote: [],
+        //   createdAt: new Date(),
+        //   updatedAt: new Date()
+        // })
+        // .then(response => {
+        //   console.log(response);
+        //   res.send('Question submited')
+        // })
+        // .catch(err => console.log(err))
       })
-      .then(response => {
-        console.log(response);
-        res.send('Task added')
-      })
-      .catch(err => console.log(err))
     })
   } else {
     res.send('Please login first')
@@ -42,7 +67,7 @@ methods.create = (req, res) => {
 methods.getOne = (req, res) => {
   if(req.headers.token) {
     util.userInfo(req.headers.token, function(user) {
-      Answer.find({_id: req.params.id, })
+      Answer.find({_id: req.params.answer_id, })
       .then(answer => {
         if(answer.creator == user._id){
           res.send(answer)
@@ -60,7 +85,7 @@ methods.getOne = (req, res) => {
 
 methods.update = (req, res) => {
   util.userInfo(req.headers.token, function(user) {
-    Answer.findById(req.params.id)
+    Answer.findById(req.params.answer_id)
     .then(answer =>{
       if(answer.creator == user.id){
         var answer = req.body.answer;
@@ -82,7 +107,7 @@ methods.update = (req, res) => {
 
 methods.delete = (req, res) => {
   util.userInfo(req.headers.token, function(user){
-    Answer.findById(req.params.id)
+    Answer.findById(req.params.answer_id)
     .then(answer => {
       if(answer.creator == user.id){
         answer.remove()
@@ -99,17 +124,23 @@ methods.delete = (req, res) => {
 
 methods.upvote = (req, res) => {
   util.userInfo(req.headers.token, function(user){
-    Answer.findById(req.params.id)
+    Answer.findById(req.params.answer_id)
     .then(answer => {
       let upvoteIdx = answer.upVote.indexOf(user.id)
       let downvoteIdx = answer.downVote.indexOf(user.id)
 
       if(upvoteIdx == -1 && downvoteIdx !== -1){
         answer.downVote.splice(downvoteIdx, 1)
-        answer.save()
+        answer.save((err, result) => {
+          res.send(err ? err : result)
+        })
       } else if (upvoteIdx == -1 && downvoteIdx == -1){
         answer.upVote.push(user.id)
-        answer.save()
+        answer.save((err, result) => {
+          res.send(err ? err : result)
+        })
+      } else {
+        res.send('you already vote')
       }
     })
     .catch(err => console.log(err))
@@ -118,17 +149,23 @@ methods.upvote = (req, res) => {
 
 methods.downvote = (req, res) => {
   util.userInfo(req.headers.token, function(user){
-    Answer.findById(req.params.id)
+    Answer.findById(req.params.answer_id)
     .then(answer => {
       let upvoteIdx = answer.upVote.indexOf(user.id)
       let downvoteIdx = answer.downVote.indexOf(user.id)
 
       if(downvoteIdx == -1 && upvoteIdx !== -1){
         answer.upVote.splice(upvoteIdx, 1)
-        answer.save()
+        answer.save((err, result) => {
+          res.send(err ? err : result)
+        })
       } else if (downvoteIdx == -1 && upvoteIdx == -1){
-        answer.downvoteIdx.push(user.id)
-        answer.save()
+        answer.downVote.push(user.id)
+        answer.save((err, result) => {
+          res.send(err ? err : result)
+        })
+      } else {
+        res.send('you already vote')
       }
     })
     .catch(err => console.log(err))

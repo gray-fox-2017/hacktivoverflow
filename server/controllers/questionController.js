@@ -6,6 +6,7 @@ methods.getAll = (req, res) => {
   Question.find({}, (err, questions) => {
     res.send(questions)
   })
+  .populate('creator')
 }
 
 methods.get = (req, res) => {
@@ -13,6 +14,7 @@ methods.get = (req, res) => {
     Question.find({creator: user.id}, (err, questions) => {
       res.send(questions)
     })
+    .populate('creator')
   })
 }
 
@@ -27,6 +29,7 @@ methods.create = (req, res) => {
         detail: detail,
         tags: tags,
         creator: user.id,
+        answer: [],
         upVote: [],
         downVote: [],
         createdAt: new Date(),
@@ -34,7 +37,7 @@ methods.create = (req, res) => {
       })
       .then(response => {
         console.log(response);
-        res.send('Task added')
+        res.send('Question created')
       })
       .catch(err => console.log(err))
     })
@@ -114,10 +117,16 @@ methods.upvote = (req, res) => {
 
       if(upvoteIdx == -1 && downvoteIdx !== -1){
         question.downVote.splice(downvoteIdx, 1)
-        question.save()
+        question.save((err, result) => {
+          res.send(err ? err : result)
+        })
       } else if (upvoteIdx == -1 && downvoteIdx == -1){
         question.upVote.push(user.id)
-        question.save()
+        question.save((err, result) => {
+          res.send(err ? err : result)
+        })
+      } else {
+        res.send('you already vote')
       }
     })
     .catch(err => console.log(err))
@@ -133,10 +142,16 @@ methods.downvote = (req, res) => {
 
       if(downvoteIdx == -1 && upvoteIdx !== -1){
         question.upVote.splice(upvoteIdx, 1)
-        question.save()
+        question.save((err, result) => {
+          res.send(err ? err : result)
+        })
       } else if (downvoteIdx == -1 && upvoteIdx == -1){
-        question.downvoteIdx.push(user.id)
-        question.save()
+        question.downVote.push(user.id)
+        question.save((err, result) => {
+          res.send(err ? err : result)
+        })
+      } else {
+        res.send('you already vote')
       }
     })
     .catch(err => console.log(err))

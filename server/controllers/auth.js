@@ -35,7 +35,7 @@ methods.login = (req, res) => {
       .then(result => {
         if(result) {
           var token = jwt.sign({id: user.id, email: user.email, username: user.username}, secret);
-          res.send(token);
+          res.send({"token": token});
         } else {
           console.log(result);
           res.send("password is incorrect");
