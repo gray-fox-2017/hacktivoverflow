@@ -2,7 +2,7 @@
   <header>
     <nav class="nav">
       <div class="nav-left">
-        <a class="nav-item" href="index.html">
+        <a class="nav-item">
           <img src="../assets/so-icon.png" alt="HacktivOverflow logo">&nbsp;Hacktiv Overflow
         </a>
         <div class="nav-item is-hidden-mobile">
@@ -26,7 +26,7 @@
 
       <div class="nav-right nav-menu">
         <div class="nav-item">
-          <button class="nav-item button is-white" v-show="!verified" @click="register_modal = true"><i class="material-icons">account_circle</i>&nbsp;Register</button>
+          <button class="nav-item button is-danger is-outlined" v-show="!verified" @click="register_modal = true"><i class="material-icons">account_circle</i>&nbsp;Register</button>&nbsp;
           <button class="nav-item button is-primary is-outlined" v-show="!verified" @click="login_modal = true"><i class="material-icons">launch</i>&nbsp;Login</button>
           <button class="nav-item button is-primary is-outlined" v-show="verified" @click="confirm"><i class="material-icons">exit_to_app</i>&nbsp;Logout</button>
         </div>
@@ -217,9 +217,18 @@ export default {
 }
 </script>
 
-<style lang="css">
+<style>
   .modal-card {
     margin: 0 auto;
     width: auto;
+  }
+
+  .nav {
+    position: fixed !important; top: 0; left: 0; right: 0;
+    width: 100%;
+    height: 4.5em;
+    padding: 1em;
+    border: 0.1em solid #F48024;
+    background-color: #FAFAFB;
   }
 </style>

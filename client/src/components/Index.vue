@@ -26,3 +26,10 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+  .index {
+    margin-top: 6em;
+    height: 30em;
+  }
+</style>
