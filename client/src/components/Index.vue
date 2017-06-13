@@ -1,10 +1,24 @@
 <template>
   <div class="index">
-    <ul v-for="thread in threads">
-      <li>{{thread.title}}</li>
-      <li>{{thread.question}}</li>
-      <li>{{thread.vote}}</li>
-    </ul>
+    <div class="container">
+      <h2>Questions</h2>
+      <div v-for="thread in threads">
+      <hr>
+        <div class="columns">
+          <div class="column is-1">
+            <p>{{thread.vote}}</p>
+            <p>votes</p>
+          </div>
+          <div class="column is-1">
+            <p>{{thread.answer_id.length}}</p>
+            <p>answers</p>
+          </div>
+          <div class="column is-10">
+            <p class="thread_title">{{thread.title}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -21,7 +35,10 @@ export default {
   },
   mounted () {
     axios.get('http://localhost:3000/threads')
-    .then(response => { this.threads = response.data })
+    .then(response => {
+      this.threads = response.data
+      console.log(JSON.stringify(response.data))
+    })
     .catch(err => console.log(err.message))
   }
 }
@@ -29,7 +46,30 @@ export default {
 
 <style scoped>
   .index {
-    margin-top: 6em;
+    margin-top: 8em;
     height: 30em;
+  }
+
+  h2 {
+    font-size: 1.5em;
+  }
+
+  p {
+    text-align: center;
+  }
+
+  .thread_title {
+    text-align: left;
+    display: inline-flex;
+    vertical-align: middle;
+    padding-left: 1em;
+  }
+
+  .container {
+    width: 70%;
+  }
+
+  hr {
+    background-color: #F48024;
   }
 </style>

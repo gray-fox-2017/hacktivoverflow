@@ -26,7 +26,7 @@
 
       <div class="nav-right nav-menu">
         <div class="nav-item">
-          <button class="nav-item button is-danger is-outlined" v-show="!verified" @click="register_modal = true"><i class="material-icons">account_circle</i>&nbsp;Register</button>&nbsp;
+          <button class="nav-item button is-danger is-outlined" v-show="!verified" @click="register_modal = true"><i class="material-icons">account_circle</i>&nbsp;Register</button>&nbsp;&nbsp;
           <button class="nav-item button is-primary is-outlined" v-show="!verified" @click="login_modal = true"><i class="material-icons">launch</i>&nbsp;Login</button>
           <button class="nav-item button is-primary is-outlined" v-show="verified" @click="confirm"><i class="material-icons">exit_to_app</i>&nbsp;Logout</button>
         </div>
