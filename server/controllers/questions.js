@@ -35,7 +35,7 @@ methods.getAll = function(req, res){
 }
 
 methods.getById = function(req, res){
-  Question.find({_id : req.params.id })
+  Question.findById(req.params.id)
 	.populate({
 		path: 'asked_by votes answers',
 			populate: {

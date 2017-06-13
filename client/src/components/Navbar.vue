@@ -5,16 +5,16 @@
       Home
     </a>
     <div class="right menu">
-      <a v-if="token" class="ui item" @click="showAkun">
-        Akun
+      <a v-if="isLogin" class="ui item" @click="showAkun">
+        Welcome, {{user}}
       </a>
-      <a v-if="token" class="ui item" @click="signOut">
+      <a v-if="isLogin" class="ui item" @click="signOut">
         Logout
       </a>
-      <a  v-if="!token" class="ui item" @click="showLogin">
+      <a  v-if="!isLogin" class="ui item" @click="showLogin">
         Signin
       </a>
-      <a  v-if="!token" class="ui item" @click="showSignup">
+      <a  v-if="!isLogin" class="ui item" @click="showSignup">
         Signup
       </a>
     </div>
@@ -23,15 +23,19 @@
 </template>
 
 <script>
+
+import {mapGetters} from 'vuex'
+
 export default {
-  name: 'Navbar',
-  data() {
+  data(){
     return {
-      token:window.localStorage.getItem('token') //this.$store.getters.getItem
+      user:window.localStorage.getItem('user')
     }
   },
   computed:{
-
+    ...mapGetters([
+      'isLogin'
+    ])
   },
   methods:{
     showLogin(){
@@ -44,15 +48,18 @@ export default {
       this.$router.push('/')
     },
     showAkun(){
-
+      this.$router.push('/profile')
     },
     signOut(){
       window.localStorage.removeItem('token')
       window.localStorage.removeItem('user')
-      this.$router.push('/login','')
-      this.$store.dispatch('changeToken')
-      location.reload()
+      this.$router.push('/login')
     }
+  },
+  created(){
+    if(window.localStorage.getItem('token'))
+    this.$store.commit('changeIsLogin',true)
+    else this.$store.commit('changeIsLogin',false)
   }
 }
 </script>

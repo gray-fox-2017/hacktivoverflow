@@ -36,7 +36,6 @@
 
 <script>
 export default {
-  name: 'Login',
   data() {
     return {
       user:{
@@ -59,14 +58,18 @@ export default {
         console.log(token);
         window.localStorage.setItem('token',token)
         window.localStorage.setItem('user', user)
-        self.$store.dispatch('changeToken')
+        self.$store.commit('changeIsLogin',true)
         self.$router.push('/')
-        location.reload()
       })
       .catch((err)=>{
         console.log(err);
       })
     }
+  },
+  created(){
+    if(window.localStorage.getItem('token'))
+    this.$store.commit('changeIsLogin',true)
+    else this.$store.commit('changeIsLogin',false)
   }
 }
 </script>

@@ -16,7 +16,7 @@
 
                 </div>
                 <div class="content center aligned ">
-                  <a class="header" style="font-size:30px">2</a>
+                  <a class="header" style="font-size:30px">{{totalQuestions(listQuestion)}}</a>
                   <div class="meta">
                     <span>PERTANYAAN</span>
                   </div>
@@ -40,7 +40,7 @@
         </div>
 
         <div class="ui celled list" style="margin-top:5%;">
-          <div class="item" v-for="(question,index) in list_question">
+          <div class="item" v-for="(question,index) in listQuestion">
             <div class="content" style="margin-top:1%;margin-bottom:1%;">
               <div class="ui grid">
                 <div class="row">
@@ -74,17 +74,22 @@
 </template>
 
 <script>
+
+import {mapGetters} from 'vuex'
+
 export default {
-  name: 'Home',
-  data() {
-    return {
-      list_question:[]
-    }
+  computed:{
+      ...mapGetters([
+        'listQuestion'
+      ])
   },
   methods:{
+    totalQuestions(arr){
+      return arr.length
+    },
     totalVotes(arr){
       return arr.reduce((total,value)=>{
-        return a + value.vote
+        return total + value.vote
       },0)
     },
     totalAnswers(arr){
@@ -95,17 +100,7 @@ export default {
     }
   },
   created(){
-    let self = this
-    let token = window.localStorage.getItem('token');
-    axios.get('http://localhost:3000/questions',{
-      headers:{
-        token:token
-      }
-    })
-    .then(response =>{
-      self.list_question=response.data;
-      console.log('self',self.list_question);
-    })
+    return this.$store.dispatch('getListQuestion')
   }
 }
 </script>

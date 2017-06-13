@@ -4,6 +4,7 @@ import Signup from '@/components/Signup'
 import Login from '@/components/Login'
 import Home from '@/components/Home'
 import DetilQuestion from '@/components/DetilQuestion'
+import Profile from '@/components/Profile'
 
 
 Vue.use(Router)
@@ -29,6 +30,12 @@ export default new Router({
       path: '/detil_question/:id',
       name: 'DetilQuestion',
       component: DetilQuestion,
+      props:true
+    },
+    {
+      path: '/profile',
+      name: 'Profile',
+      component: Profile,
       props:true
     }
   ]
