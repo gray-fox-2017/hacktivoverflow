@@ -31,10 +31,12 @@ export const Mutations = {
     // state.newQuestion = payload
   },
   deleteQuestion: (state, payload) => {
-    state.dataQuestions = payload
-    // window.location = '/'
-    // let questions = state.dataQuestions
-    // questions.splice(questions.indexOf(payload), 1)
+    // state.dataQuestions = payload
+
+    let newQuestions = state.dataQuestions.filter(question => question._id !== payload._id)
+    console.log('its  newQuestions ', newQuestions);
+    console.log('its state question', state.dataQuestions);
+    state.dataQuestions = newQuestions
   },
   addAnswer: (state, payload) => {
     state.detailQuestion = payload
@@ -43,9 +45,14 @@ export const Mutations = {
     state.detailQuestion = payload
   },
   deleteAnswer: (state, payload) => {
-    // state.detailQuestion = payload
-    let answers = state.detailQuestion
-    answers.splice(answers.indexOf(payload.answerid), 1)
+    state.detailQuestion = payload
+    // let newAnswers = state.detailQuestion.answers.filter(answer => answer._id !== payload.answerid)
+    // console.log('its  newAnswers ', newAnswers);
+    // console.log('its state answer', state.detailQuestion.answers);
+    // state.detailQuestion.answers = newAnswers
+
+    // let answers = state.detailQuestion
+    // answers.splice(answers.indexOf(payload.answerid), 1)
   },
   convertDate: (state, payload) => {
     let getDate = new Date(payload);

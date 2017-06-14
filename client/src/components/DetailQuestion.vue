@@ -5,6 +5,7 @@
         <div style="margin-top:15px;text-align:-webkit-auto;" class="teks-bawah">
           <router-link :to="'/'"><span style="color:blue;">homepage</span></router-link>&nbsp;&nbsp;<span>/</span>&nbsp;&nbsp;<span>detail question</span>
         </div>
+        <!-- {{indexquestion}} -->
         <div style="margin-top: 15px;">
           <h1 style="font-size:22px;font-weight:500;color:navy;text-align:-webkit-auto;">{{indexquestion.title}}</h1>
           <hr style="border-color:white;">
@@ -29,7 +30,6 @@
               <span class="teks-bawah">asked {{indexquestion.createdDate}} by <b>{{indexquestion.askedBy.name}}</b></span>
             </el-col>
           </el-row>
-          <!-- <hr style="border-color:white;"> -->
           <el-row :gutter="20" type="flex" class="row-bg" justify="center">
             <el-col :span="12">
               <div class="grid-content">
@@ -45,6 +45,7 @@
           <hr style="border-color:white;">
           <div v-for="(answer, index) in indexquestion.answers" :key="index">
             <el-row>
+              <!-- {{answer}} -->
               <el-col :span="1">
                 <div class="vote">
                   <i class="el-icon-caret-top" @click="voteToAnswer(1, answer, index)"></i><br>
@@ -54,7 +55,6 @@
                 </div>
               </el-col>
               <el-col :span="18" style="text-align:-webkit-auto;">
-                <!-- {{answer.answeredBy}} -->
                 <p style="margin-top:0px;">
                   {{answer.content}}
                   <el-button v-if="answer.answeredBy._id == cekUser" :plain="true" type="warning" size="mini" @click="viewFormEditAnswer(answer, index)">edit</el-button>
@@ -318,9 +318,9 @@ export default {
       if (confirm(`Are you sure want to delete ${this.indexquestion.title}?`)) {
         this.$store.dispatch('deleteQuestion', this.id)
       }
-      this.$store.state.dataQuestions
-      window.location = '/'
-      // this.$router.push('/')
+      this.$router.push('/')
+      // this.$store.state.dataQuestions
+      // window.location = '/'
     },
     voteToQuestion(vote, answer) {
       let payload = {
@@ -352,9 +352,20 @@ export default {
           questionid: this.id,
           answerid: answer._id
         }
+
+        // this.$router.push(`/detail/${this.id}`)
+
         this.$store.dispatch('deleteAnswer', payload)
+
+        let newAnswers = this.$store.state.detailQuestion.answers.filter(answer => answer._id !== payload.answerid)
+        this.indexquestion.answers = newAnswers
+        console.log('1. cekkk ***: ', this.$store.state.detailQuestion.answers);
+        console.log('2. cekkk ***: ', newAnswers);
+
+        // this.indexquestion.answers.splice(index, 1)
+        // this.$store.state.detailQuestion
       }
-      this.indexquestion.answers.splice(index, 1)
+
     }
   },
   computed: {
