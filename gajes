@@ -1,0 +1,90 @@
+user => question => answer
+auth nanti
+
+
+backend
+v user
+q
+a
+auth
+
+
+
+
+const page_auth = {
+  user : {
+    hasParam: {
+      GET: ['admin', 'id'],
+      PUT: ['id'],
+      DELETE: ['admin']
+    },
+    noParam: { GET: ['admin'] }
+  },
+  qna : {
+    [
+      name: '/',
+      hasParam: {
+        PUT: ['id'],
+        DELETE: ['id', 'login']
+      },
+      noParam: {
+        GET: ['admin']
+        POST: ['login'] -> normal
+      }
+    ],
+    [
+      name: '/vote',
+      hasParam: { GET: ['login - not_id'] }
+    ],
+    [
+      name: '/reply',
+      hasParam: { POST: ['login'] }
+    ]
+  }
+}
+
+
+user {
+  username
+  password
+  [questionList]
+  [answerList]
+}
+
+question {
+  title
+  descr
+  [answerList]
+  [voteQ]
+  _user
+}
+
+answer {
+  descr
+  [voteA]
+  _question
+  _user
+}
+
+voteQ {
+  id
+  q
+  poin : -1 | 1
+  _user
+}
+
+voteA {
+  id
+  a
+  poin : -1 | 1
+  user
+}
+
+- route mending ditengah readable
+- findone then gpp
+- helper aja password teman
+-
+
+
+
+kalau vote belum otomatis masuk ans -> votelist
