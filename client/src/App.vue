@@ -18,3 +18,10 @@ export default {
   }
 }
 </script>
+
+<style>
+  #app {
+    display: flex;
+    flex-direction: column;
+  }
+</style>

@@ -29,6 +29,7 @@ function createAnswer(req, res) {
     answer:     req.body.answer,
     thread_id:  req.body.thread_id,
     user_id:    req.body.user_id,
+    user_name:  req.body.user_name,
     vote:       req.body.vote,
     created_at: new Date(),
   }, function(err, answer) {
@@ -77,7 +78,8 @@ function updateAnswer(req, res) {
       $set: {
         answer:     req.body.answer || answer[0].answer,
         thread_id:  req.body.thread_id || answer[0].thread_id,
-        user_id:    req.body.thread_id || answer[0].user_id,
+        user_id:    req.body.user_id || answer[0].user_id,
+        user_name:  req.body.user_name || answer[0].user_name,
         vote:       req.body.vote || answer[0].vote,
         updated_at: new Date(),
       }

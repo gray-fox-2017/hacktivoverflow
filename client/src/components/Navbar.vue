@@ -2,9 +2,11 @@
   <header>
     <nav class="nav">
       <div class="nav-left">
-        <a class="nav-item">
-          <img src="../assets/so-icon.png" alt="HacktivOverflow logo">&nbsp;Hacktiv Overflow
-        </a>
+        <router-link :to="{ name: 'Index'}">
+          <a class="nav-item">
+            <img src="../assets/so-icon.png" alt="HacktivOverflow logo">&nbsp;Hacktiv Overflow
+          </a>
+        </router-link>
         <div class="nav-item is-hidden-mobile">
           <p class="control">
             <input class="input" type="text" placeholder="Search for questions">
@@ -115,7 +117,7 @@
       </div>
     </b-modal>
 
-    <sweet-modal icon="success" ref="alert_success">Success.<br>You will be redirected..</sweet-modal>
+    <sweet-modal icon="success" ref="alert_success">Success.<br>{{greet}}..</sweet-modal>
     <sweet-modal icon="warning" ref="alert_warning">
     	Are you sure?<br><br>
       <button class="button is-success" @click="signout">Yes</button>
@@ -144,8 +146,10 @@ export default {
       verified: false,
       login_modal: false,
       register_modal: false,
+      greet: '',
       token: localStorage.getItem('token'),
-      userid: localStorage.getItem('userid')
+      user_id: localStorage.getItem('user_id'),
+      user_name: localStorage.getItem('user_name')
     }
   },
   mounted () {
@@ -165,12 +169,14 @@ export default {
         } else if (res.data === 'wrong password') {
           self.$refs.wrong_pass.open()
         } else {
+          self.greet = 'You are login'
+          self.login_modal = false
           self.$refs.alert_success.open()
           localStorage.setItem('token', res.data.token)
-          localStorage.setItem('userid', res.data.userid)
-          setTimeout(function () {
-            location.reload()
-          }, 2000)
+          localStorage.setItem('user_id', res.data.user_id)
+          localStorage.setItem('user_id', res.data.user_name)
+          console.log(res.data)
+          self.verified = true
         }
       })
       .catch((err) => {
@@ -180,22 +186,22 @@ export default {
       })
     },
     signout () {
+      this.greet = 'You are logout'
       localStorage.clear()
       this.$refs.alert_warning.close()
       this.$refs.alert_success.open()
-      setTimeout(function () {
-        location.href = '/'
-      }, 2000)
+      this.verified = false
+      this.$router.push('/')
     },
     register () {
       let self = this
       axios.post('http://localhost:3000/users', {name: this.name, email: this.email, password: this.password})
       .then((res) => {
         console.log(res.data)
+        this.greet = 'Thank you! Please login to continue..'
+        self.register_modal = false
         self.$refs.alert_success.open()
-        setTimeout(function () {
-          location.reload()
-        }, 2000)
+        this.$router.push('/')
       })
       .catch((err) => {
         console.log('failed')
@@ -217,7 +223,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
   .modal-card {
     margin: 0 auto;
     width: auto;

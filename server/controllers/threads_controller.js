@@ -15,7 +15,7 @@ function getAll(req, res) {
 }
 
 function getSingle(req, res) {
-  Threads.find(req.params.id).populate('answer_id')
+  Threads.findById(req.params.id).populate('answer_id')
   .exec(function(err, result) {
     if (err) {
       res.send(err.message);
@@ -31,6 +31,7 @@ function createThread(req, res) {
     title:      req.body.title,
     question:   req.body.question,
     user_id:    req.body.user_id,
+    user_name:  req.body.user_name,
     vote:       req.body.vote,
     created_at: new Date()
   }, function(err, thread) {
@@ -82,6 +83,7 @@ function updateThread(req, res) {
         question:   req.body.question || thread[0].question,
         vote:       req.body.vote || thread[0].vote,
         user_id:    req.body.user_id || thread[0].user_id,
+        user_name:  req.body.user_name || thread[0].user_name,
         updated_at: new Date()
       }
     }, (err, result) => {

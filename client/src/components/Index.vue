@@ -2,8 +2,8 @@
   <div class="index">
     <div class="container">
       <h2>Questions</h2>
-      <div v-for="thread in threads">
       <hr>
+      <div v-for="thread in threads">
         <div class="columns">
           <div class="column is-1">
             <p>{{thread.vote}}</p>
@@ -14,9 +14,11 @@
             <p>answers</p>
           </div>
           <div class="column is-10">
-            <p class="thread_title">{{thread.title}}</p>
+            <a class="thread_title"><router-link :to="{ name: 'Thread', params: {id: thread._id} }">{{thread.title}}</router-link></a>
+            <p class="posted"><small><span class="tag is-info is-small">Asked by: {{thread.user_name}}</span></small></p>
           </div>
         </div>
+        <hr>
       </div>
     </div>
   </div>
@@ -30,7 +32,9 @@ export default {
   data () {
     return {
       threads: [],
-      token: localStorage.getItem('token')
+      token: localStorage.getItem('token'),
+      user_id: localStorage.getItem('user_id'),
+      user_name: localStorage.getItem('user_name')
     }
   },
   mounted () {
@@ -48,6 +52,7 @@ export default {
   .index {
     margin-top: 8em;
     height: 30em;
+    flex: 1;
   }
 
   h2 {
@@ -61,8 +66,8 @@ export default {
   .thread_title {
     text-align: left;
     display: inline-flex;
-    vertical-align: middle;
     padding-left: 1em;
+    vertical-align: middle;
   }
 
   .container {
@@ -71,5 +76,9 @@ export default {
 
   hr {
     background-color: #F48024;
+  }
+
+  .posted {
+    text-align: right;
   }
 </style>

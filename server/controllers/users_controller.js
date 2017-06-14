@@ -18,7 +18,7 @@ function login(req, res){
       else if(bcrypt.compareSync(req.body.password, user.password)){
         let token = jwt.sign({email: user.email, role: user.role, userid: user._id}, secret, {expiresIn:'1h'})
         console.log('success');
-        res.send({token: token, userid: user._id});
+        res.send({token: token, user_id: user._id, user_name: user.name});
       } else {
         console.log('failed');
         res.send('wrong password');
@@ -40,7 +40,7 @@ function getAll(req, res) {
 }
 
 function getSingle(req, res) {
-  Users.find(req.params.id).populate('thread_id answer_id')
+  Users.findById(req.params.id).populate('thread_id answer_id')
   .exec(function(err, result) {
     if (err) {
       res.send(err.message);

@@ -5,6 +5,7 @@ var threadsSchema = new Schema({
   question:   String,
   answer_id:  [{ type: Schema.Types.ObjectId, ref: 'answers' }],
   user_id:    { type: Schema.Types.ObjectId, ref: 'users' },
+  user_name:  String,
   vote:       Number,
   created_at: Date,
   updated_at: Date
