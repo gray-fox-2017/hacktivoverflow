@@ -4,6 +4,7 @@ var mongoose = require('mongoose');
 var cors = require('cors')
 
 mongoose.connect('mongodb://localhost/hacktiv-overflow-db');
+// mongoose.connect('mongodb://<erwinwahyura>:<dbpassword>@ds121222.mlab.com:21222/lab-hactiv8-overflow');
 
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));

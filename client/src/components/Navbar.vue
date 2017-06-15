@@ -64,10 +64,11 @@ export default {
     logout () {
       localStorage.clear()
       this.$router.push("/login")
+      location.reload()
     }
   },
   created () {
-    if (localStorage.getItem('token') !== null) {
+    if (localStorage.getItem('token')) {
       this.islogin == true
       this.name = localStorage.getItem('username')
     }

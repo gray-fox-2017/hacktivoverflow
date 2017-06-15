@@ -37,7 +37,7 @@ export default {
   },
   methods: {
     signin () {
-      axios.post('http://localhost:3000/api/signin', {
+      this.axios.post('http://localhost:3000/api/signin', {
         username: this.username,
         password: this.password
       })
@@ -53,7 +53,7 @@ export default {
           localStorage.setItem('username', response.data.username)
           localStorage.setItem('email', response.data.email)
           this.$router.push("/")
-          // location.reload()
+          location.reload()
         }
       })
       .catch(err => {

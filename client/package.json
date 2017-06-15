@@ -5,13 +5,15 @@
   "author": "erwinwahyura <you@example.com>",
   "private": true,
   "scripts": {
-    "dev": "nodemon build/dev-server.js",
+    "dev": "node build/dev-server.js",
     "start": "node build/dev-server.js",
     "build": "node build/build.js"
   },
   "dependencies": {
+    "axios": "^0.16.2",
     "bootstrap-vue": "^0.16.1",
     "vue": "^2.3.3",
+    "vue-axios": "^2.0.2",
     "vue-router": "^2.3.1"
   },
   "devDependencies": {

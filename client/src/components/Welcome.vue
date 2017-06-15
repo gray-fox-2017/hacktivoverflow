@@ -1,83 +1,42 @@
 <template lang="html">
   <div id="app">
     <!-- {{ questions }} -->
+    <h1 style="margin-left:140px">Top Questions</h1>
+    <hr style="width:80%">
     <div class="container" v-for="question in questions">
       <div class="row">
-        <div class="col-md-1">
-          <div class="votes">
-            <h1>votes</h1>
-            <a class="vote-up-off"><img src="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-arrow-up-b-128.png" alt="vote-up"></a>
-            <h1>{{ question.upvotes.length - question.downvotes.length }}</h1>
-            <a href="" class="vote-up-off"><img src="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-arrow-down-b-128.png" alt="vote-up"></a>
+        <hr>
+        <div class="col-md-12">
+
+          <div class="col-md-1">
+            <div class="votes">
+              <h5>votes</h5>
+              <h5>{{ question.upvotes.length - question.downvotes.length }}</h5>
+            </div>
           </div>
-        </div>
-        <div class="col-md-10">
-          <div class="container" >
-          	<div class="span8">
+          <div class="col-md-1">
+            <div class="votes">
+              <h5>answer</h5>
+              <h5>{{ question.upvotes.length - question.downvotes.length }}</h5>
+            </div>
+          </div>
+
+          <div class="col-md-10">
+            <div class="container" >
+            	<div class="span8">
               <hr>
-                  <h1>{{ question.title }}</h1>
-                  <article class="article">
-                    <p>{{ question.body }}</p>
-                    <p text-align="left">
-                    createdAt : {{ question.createdAt}} <br>
-                    updatedAt : {{ question.updatedAt}}
-                    </p>
-                  </article>
-                  <div>
-                    <h4>asked by: {{ question.creator }}</h4>
-                      <div class="more label"><a href="#">Read more</a></div>
-                      <div class="tags">
-                          <span class="btn-info" ><a href="#">javascript</a></span><span class="btn-info"><a href="#">nodejs</a></span><span class="btn-info"><a href="#">regex</a></span>
-                      </div>
-
-
-                  </div>
-
-                  <div class="clear"></div>
-                  <div class="container">
-                    <div class="col-md-12">
-                      <div class="row">
-                        <div class="col-md-1">
-                          <div class="votes">
-                            <h3>votes</h3>
-                            <a class="vote-up-off"><img src="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-arrow-up-b-128.png" alt="vote-up"></a>
-                            <h1>{{ question.upvotes.length - question.downvotes.length }}</h1>
-                            <a href="" class="vote-up-off"><img src="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-arrow-down-b-128.png" alt="vote-up"></a>
-                          </div>
-                        </div>
-                        <div class="answer col-md-11" >
-                          <h3>answer</h3>
-                          <hr>
-                            <h1>{{ question.answersBody }}</h1>
-                            <article class="article">
-                              <p>{{ question._id }}</p>
-                            </article>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-              </div>
-              <div class="comment">
-                <!-- <span><a class="btn " href="#">Comment</a></span> -->
-                <p class="btn-info text-left" @click="comment(question._id)"><a href="#" class="btn btn-default btn-sm"><i class="fa fa-reply"></i> reply</a></p>
-
-                <div class="" v-if="status_comment == question._id">
-                  <div class="col">
-                    <div class="panel-body">
-                      <form role="form">
-                        <fieldset>
-                          <div class="form-group">
-                            <textarea class="form-control" rows="3" placeholder="Write in your wall" autofocus=""></textarea>
-                          </div>
-                          <button @click="postComment(question._id)" type="submit" class="[ btn btn-success ]" data-loading-text="Loading...">Post reply</button>
-                        </fieldset>
-                      </form>
-                    </div>
+                <h1>{{ question.title }}</h1>
+                <div>
+                  <div class="more label"><a href="#">Read more</a></div>
+                  <div class="tags">
+                      <span class="btn-info" ><a href="#">javascript</a></span><span class="btn-info"><a href="#">nodejs</a></span><span class="btn-info"><a href="#">regex</a></span>
                   </div>
                 </div>
               </div>
+            </div>
           </div>
         </div>
+
       </div>
     </div>
   </div>
